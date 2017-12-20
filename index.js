@@ -6,4 +6,4 @@ const client = new Client()
     .loadEvents(`./events`);
 
 client.start(client.config.credentials.token);
-client.sql(client.config.credentials.mysql.user, client.config.credentails.mysql.pass, client.config.credentials.mysql.db);
+client.sql(client.config.credentials.mysql.user, client.config.credentials.mysql.pass, client.config.credentials.mysql.db);
