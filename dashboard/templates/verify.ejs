@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <%- include("blocks/head.ejs") %>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-light bg-none">
+            <a class="navbar-brand" href="staff.html"><span class="fa fa-lock"></span> Staff Panel</a>
+          </nav>
+        
+          <div class="container body">
+            <% if (data.error) { %>
+              <div class="alert alert-danger alert-dismissable fade show" role="alert">
+                <b>Error:</b> <%= data.error %>
+                <button class="close d-none d-md-block" data-dismiss="alert">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            <% } else if (data.message) { %>
+              <div class="alert alert-success alert-dismissable fade show" role="alert">
+                <%= data.message %>
+                <button class="close d-none d-md-block" data-dismiss="alert">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            <% } %>
+            <form method="post">
+              <div class="form-group">
+                <label for="username">Minecraft Username</label>
+                <input type="text" class="form-control" name="username">
+              </div>
+              <div class="form-group">
+                <label for="key">Secret Key</label>
+                <input type="text" class="form-control" name="key">
+              </div>
+              <br><button type="submit" class="btn btn-primary verify"><span class="fa fa-check"></span> Verify</button><br>
+              <b>Don't have a secret key? Get one!</b>
+              <ol>
+                <li>Log onto the <kbd>mcdiamondfire.com</kbd> minecraft server.</li>
+                <li>Type <kbd>/verify</kbd> in chat to get your secret key.</li>
+                <li>Enter that secret key in the box above.</li>
+                <li>You'll get sent a confirmation link via private message on Discord.</li>
+                <li>Click the link given, and your account will be verified!</li>
+              </ol>
+            </form>
+          </div>
+        
+          <%- include("blocks/footer.ejs") %>
+    </body>
+</html>

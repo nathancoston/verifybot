@@ -1,0 +1,70 @@
+.container.body {
+    width: 90%;
+    margin-top: 3%;
+  }
+  
+  .nav-link,
+  button {
+    cursor: pointer;
+  }
+  
+  .container.footer {
+    border-top: 1px solid #ddd;
+    margin-top: 5%;
+    padding: 0.5%;
+  }
+  
+  .tag {
+    display: inline-block;
+    padding: 0.5%;
+    margin: 0 1%;
+  }
+  
+  .card {
+    margin-bottom: 5%;
+  }
+  
+  *[data-toggle="tooltip"] {
+    cursor: pointer;
+  }
+  
+  .bg-jrhelper {
+    background-color: #5555ff !important;
+    color: white;
+  }
+  
+  .bg-helper {
+    background-color: #55ffff !important;
+    color: black;
+  }
+  
+  .bg-expert {
+    background-color: #ffff55 !important;
+    color: black;
+  }
+  
+  .bg-jrmod {
+    background-color: #ffff55 !important;
+    color: black;
+  }
+  
+  .bg-mod {
+    background-color: #00AA00 !important;
+    color: white;
+  }
+  
+  .bg-admin {
+    background-color: #FF5555 !important;
+    color: white;
+  }
+  
+  .bg-owner {
+    background-color: #AA0000 !important;
+    color: white;
+  }
+  
+  @media (min-width: 768px) {
+    .container.body {
+      width: 50;
+    }
+  }

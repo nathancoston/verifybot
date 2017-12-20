@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <%- include("blocks/head.ejs") %>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-light bg-none">
+            <a class="navbar-brand mr-auto" href="staff.html"><span class="fa fa-lock"></span> Staff Panel</a>
+            <span class="navbar-text"><%= playername %></span>
+          </nav>
+        
+          <div class="container body">
+            <% let rankNames = {
+                support: [null, "Jrhelper", "Helper", "Expert"],
+                moderation: [null, "Jrmod", "Moderator", "Administrator", "Owner"]
+            },
+            rankColors = {
+                support: [null, "#5555ff", "#55ffff", "#ffff55"],
+                moderation: [null, "#ffff55", "#00aa00", "#ff5555", "#aa0000"]
+            };
+            
+            if (data.support) { %>
+                <div class="card">
+                    <div class="card-header bg-<%= rankNames.support[data.support].toLowerCase() %>">
+                        Support Panel
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <h3>Your Tags</h3>
+                            <kbd style="color: <%= rankColors.support[data.support] %>"><%= rankNames.support[data.support] %></kbd>
+                            <% if (data.moderation) { %>
+                                <kbd style="color: <%= rankColors.moderation[data.moderation] %>"><%= rankNames.moderation[data.moderation] %></kbd>
+                            <% } %>
+                        </p>
+
+                        <p>
+                            <h3>Queue</h3>
+                        </p>
+                    </div>
+                </div>
+            <% }
+            if (data.moderation) { %>
+            <% } %>
+          </div>
+        
+          <%- include("blocks/footer.ejs") %>
+    </body>
+</html>
