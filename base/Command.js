@@ -12,7 +12,7 @@ module.exports = class Base {
 
         this.conf = {
             level: options.permLevel || 0,
-            cooldown: options.cooldown || 0,
+            cooldown: options.cooldown || 10000,
             aliases: options.aliases || []
         };
 

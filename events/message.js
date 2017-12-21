@@ -27,8 +27,18 @@ module.exports = class {
         message.delete();
         cmd.message = message;
 
+        if (this.client.commandCooldowns.has(message.author.id)) return;
+
         if (userPerms.level < cmd.conf.level) return cmd.error(`Your permission level is too low to execute this command. You are permission level \`${userPerms.level}\` (**${userPerms.name}**) and this command required level \`${cmd.conf.level}\` (**${levels.perms.find(p => p.level == cmd.conf.level).name}**).`);
 
         cmd.run(message, args, userPerms);
+
+        if (cmd.conf.cooldown > 0) {
+            this.client.commandCooldowns.add(message.author.id);
+
+            setTimeout(() => {
+                this.client.commandCooldowns.delete(message.author.id);
+            }, cmd.conf.cooldown);
+        }
     }
 };
