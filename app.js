@@ -1,5 +1,5 @@
 //Node modules
-const {Client, Collection, Message} = require("discord.js");
+const { Client, Collection, Message } = require("discord.js");
 const sql = require("mysql");
 const fs = require("fs");
 
