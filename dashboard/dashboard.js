@@ -31,11 +31,13 @@ module.exports = (client) => {
         done(null, user);
     });
 
+    console.log(client.config.dashboard.domain);
+
     //Define OAUTH2 data.
     passport.use(new Strategy({
         clientID: client.user.id,
         clientSecret: client.config.dashboard.clientSecret,
-        callbackURL: `${client.config.dashboard.domain}`,
+        callbackURL: `${client.config.dashboard.domain}/callback`,
         scope: ["identify"]
     }, (accessToken, refreshToken, profile, done) => {
         process.nextTick(() => done(null, profile));
