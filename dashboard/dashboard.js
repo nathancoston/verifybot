@@ -31,8 +31,6 @@ module.exports = (client) => {
         done(null, user);
     });
 
-    console.log(client.config.dashboard.domain);
-
     //Define OAUTH2 data.
     passport.use(new Strategy({
         clientID: client.user.id,
@@ -115,7 +113,7 @@ module.exports = (client) => {
                 member.addRole(member.guild.roles.find("name", "Verified")).catch(console.log);
 
                 client.tokens.delete(req.user.id);
-                client.log(`**${req.user.username}#${req.user.tag}** has been verified as **${accInfo.data.player_name}**.`, client.config.webhooks.logs);
+                client.log(`**${req.user.username}#${req.user.tag}** has been verified as **${accInfo.data.player_name}**.`, client.config.webhooks.verification);
 
                 client.connection.query(`UPDATE linked_accounts SET discord_id = ${req.user.id}, secret_key = null WHERE player_name = '${accInfo.data.player_name.replace(/[^a-z_\d]/ig)}'`);
             }
