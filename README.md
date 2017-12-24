@@ -5,8 +5,4 @@ This is the official bot used by the [mcdiamondfire](http://www.mciamondfire.com
 Verifying your account has multiple benifits, such as enabling "reactions." If you do not verify your account, you will not be able to send messages to any channel.
 
 # Self Hosting
-<<<<<<< HEAD
 Feel free to try to self host a version of VerifyBot, but keep in mind you need a mySQL database with the proper data structure.
-=======
-Feel free to try to self host a version of VerifyBot, but keep in mind you need a mySQL database with the proper data structure.
->>>>>>> 36cf3b781b294f35eb9661b633f84d9effcd4b54
