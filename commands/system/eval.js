@@ -6,15 +6,14 @@ module.exports = class Eval extends Base {
         super(client, {
             name: "eval",
             description: "Evaluate arbitrary JavaScript code.",
-            extended: "Evaluates the inputted JavaScript code - use `this.client` to access the client variable. **This can be extremely dangerous; use with caution!**",
             category: "system",
             permLevel: 10
         });
     }
 
-    run(message, args, perms) {
+    run(message) {
         const start = Date.now();
-        const result = new Promise((r) => r(eval(this.message.content.split(" ").slice(1).join(" "))));
+        const result = new Promise((r) => r(eval(message.content.split(" ").slice(1).join(" "))));
     
         result.then(output => {
           const out = inspect(output);

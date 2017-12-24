@@ -5,7 +5,6 @@ module.exports = class Shutdown extends Base {
         super(client, {
             name: "shutdown",
             description: "Shut the bot down.",
-            extended: "This command completely stops all of the bot's processes.",
             category: "system",
             permLevel: 10
         });

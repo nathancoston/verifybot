@@ -4,8 +4,7 @@ module.exports = class Ping extends Command {
     constructor(client) {
         super(client, {
             name: "verify",
-            description: "Verify your account.",
-            extended: "Link your minecraft and discord accounts.",
+            description: "Link your Minecraft and Discord accounts.",
             category: "information",
             permLevel: 0
         });

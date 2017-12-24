@@ -5,7 +5,6 @@ module.exports = class Help extends Base {
         super(client, {
             name: "help",
             description: "Get a full list of commands.",
-            extended: "Get a full list of commands. Add the argument `--filter` to show only commands that you have the permissions to use.",
             usage: "[--filter]",
             category: "information",
             permLevel: 0

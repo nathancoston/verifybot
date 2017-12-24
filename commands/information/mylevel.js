@@ -5,7 +5,6 @@ module.exports = class MyLevel extends Base {
         super(client, {
             name: "mylevel",
             description: "See your permission level.",
-            extended: "View your user permission level. This level is what access level you have to certain commands.",
             category: "information",
             permLevel: 0 
         });
