@@ -9,6 +9,6 @@ module.exports = class {
 
         require("../dashboard/dashboard")(this.client); //eslint-disable-line global-require
 
-        this.client.user.setActivity("!verify", { type: "PLAYING" });
+        this.client.loop();
     }
 };
