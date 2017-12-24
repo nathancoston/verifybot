@@ -50,27 +50,15 @@ module.exports = class Base {
         });
     }
 
-    parseCleanSQL(string) {
-        return new Promise((resolve) => {
-            const matches = string.match(/&<%\d{1,2}%>/ig);
-            let cleaned = string;
-
-            if (matches) {
-                matches.forEach(match => {
-                    const code = parseInt(/\d{1,2}/ig.exec(match));
-                    cleaned = cleaned.replace(new RegExp(match, "ig"), String.fromCharCode(code));
-                });
-            }
-
-            return resolve(string);
-        });
-    }
-
     error(content) {
         return this.message.channel.send(`❌ | ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
     respond(content) {
         return this.message.channel.send(`✅ | ${content}`).then(m => m.delete({ timeout: 15000 }));
+    }
+
+    s(size) {
+        return size === 1 ? "" : "s";
     }
 };
