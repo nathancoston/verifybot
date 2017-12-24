@@ -12,22 +12,15 @@
             this.events = new Collection();
 
             this.attempts = new Collection();
+            this.commandCooldowns = new Set();
             this.cooldowns = new Collection();
             this.tokens = new Collection();
 
             this.config = {};
 
             setInterval(() => {
-                this.connection.query("SELECT discord_id, player_name FROM linked_accounts", (err, fields) => {
-                    if (err) throw err;
-
-                    fields.forEach(player => {
-                        this.guilds.get(this.config.guild).members.fetch(player.discord_id).then(member => {
-                            if (!member.nickname && member.user.username !== player.player_name) member.setNickname(player.player_name).then(() => member.send("Your nickname has been synced with your minecraft username.").catch(() => null)).catch(() => null);
-                        }).catch(() => this.connection.query(`DELETE FROM linked_accounts WHERE discord_id = '${player.discord_id}';`));
-                    });
-                });
-            }, 3600000);
+                this.loop();
+            }, 900000);
         }
 
         setConfig(path) {
@@ -105,6 +98,26 @@
             }
 
             return new Promise((res, rej) => rej("No webhook specified"));
+        }
+
+        loop() {
+            this.connection.query("SELECT discord_id, player_name FROM linked_accounts", (err, fields) => {
+                if (err) throw err;
+
+                fields.forEach(player => {
+                    this.guilds.get(this.config.guild).members.fetch(player.discord_id).then(member => {
+                        if (member.displayName !== player.player_name) member.setNickname(player.player_name).then(() => member.send("Your nickname has been synced with your minecraft username.").catch(() => null)).catch(() => null);
+                    }).catch(() => this.connection.query(`DELETE FROM linked_accounts WHERE discord_id = '${player.discord_id}';`));
+                });
+            });
+
+            this.connection.query("SELECT @playercount;", (err, fields) => {
+                if (err || !fields[0]) return this.user.setPresence({ status: "dnd", game: { name: "MySQL error" } });
+
+                //console.log(fields[0]);
+                
+                this.user.setActivity(`with ${fields[0].playercount} players`);
+            });
         }
         
         permLevel(user) {
