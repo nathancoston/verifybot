@@ -26,7 +26,7 @@ module.exports = class Help extends Base {
             output.push(`== ${this.toTitleCase(category)}\n${thisCategory.map(c => `${c.help.name + " ".repeat(spacing - c.help.name.length)} :: ${c.help.description}`).join("\n")}`);
         });
 
-        message.author.send(`[ Commands ]\n\n${output.join("\n\n")}`, {code: "asciidoc"}).catch(() => super.error("You are blocking direct messages."));
+        message.author.send(`[ Commands ]\n\n${output.join("\n\n")}`, { code: "asciidoc" }).catch(() => super.error("You are blocking direct messages."));
     }
 
     filterRepeats(array) {
