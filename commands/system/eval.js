@@ -1,5 +1,5 @@
 const Base = require("../../base/Command.js");
-const {inspect} = require("util");
+const { inspect } = require("util");
 
 module.exports = class Eval extends Base {
     constructor(client) {
