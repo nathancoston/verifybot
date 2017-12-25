@@ -6,6 +6,7 @@ module.exports = class Eval extends Base {
         super(client, {
             name: "eval",
             description: "Evaluate arbitrary JavaScript code.",
+            usage: "<code>",
             category: "system",
             permLevel: 10
         });
