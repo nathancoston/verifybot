@@ -1,3 +1,5 @@
+const { perms } = require("../levels.json");
+
 module.exports = class Base {
     constructor(client, options) {            
         this.client = client;
@@ -5,7 +7,6 @@ module.exports = class Base {
         this.help = {
             name: options.name || "unset",
             description: options.description || "No description provided.",
-            extended: options.extended || "No description provided.",
             usage: options.usage || "",
             category: options.category || "information"
         };
@@ -39,5 +40,9 @@ module.exports = class Base {
 
     s(size) {
         return size === 1 ? "" : "s";
+    }
+
+    get permLevel() {
+        return perms.find(p => p.level === this.conf.level) || perms[0];
     }
 };
