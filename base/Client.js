@@ -113,8 +113,6 @@
 
             this.connection.query("SELECT @playercount;", (err, fields) => {
                 if (err || !fields[0]) return this.user.setPresence({ status: "dnd", game: { name: "MySQL error" } });
-
-                //console.log(fields[0]);
                 
                 this.user.setActivity(`with ${fields[0].playercount} players`);
             });
