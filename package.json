@@ -19,6 +19,7 @@
     "level": "^2.1.0",
     "level-session-store": "^2.1.0",
     "marked": "^0.3.6",
+    "ms": "^2.1.1",
     "mysql": "^2.15.0",
     "passport": "^0.4.0",
     "passport-discord": "^0.1.3",
