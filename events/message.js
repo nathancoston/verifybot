@@ -29,7 +29,7 @@ module.exports = class {
 
         if (this.client.commandCooldowns.has(message.author.id)) return;
 
-        if (userPerms.level < cmd.conf.level) return cmd.error(`Your permission level is too low to execute this command. You are permission level \`${userPerms.level}\` (**${userPerms.name}**) and this command required level \`${cmd.conf.level}\` (**${levels.perms.find(p => p.level == cmd.conf.level).name}**).`);
+        if (userPerms.level < cmd.conf.level) return cmd.error(`Your permission level is too low to execute this command. You are permission level \`${userPerms.level}\` (**${userPerms.name}**) and this command required level \`${cmd.conf.level}\` (**${levels.perms.find(p => p.level === cmd.conf.level).name}**).`);
 
         cmd.run(message, args, userPerms);
 
