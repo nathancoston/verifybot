@@ -30,7 +30,7 @@ module.exports = class {
                     if (err) return console.log(`Error whilst fetching starboard data:\n${err}`);
     
                     if (stars.count >= 5) {
-                        if (fields.length === 0) {
+                        if (!fields || fields.length === 0) {
                             const embed = new MessageEmbed()
                             .setColor(16776960)
                             .setAuthor(message.member.displayName, message.author.displayAvatarURL())
@@ -49,14 +49,22 @@ module.exports = class {
     
                             if (message.attachments.size > 0) embed.setImage(message.attachments.first().url);
     
-                            const post = await channel.messages.fetch(fields[0].post_id);
-                            post.edit(`${star} ${stars.count} in ${message.channel.toString()}`, { embed });
+                            try {
+                                const post = await channel.messages.fetch(fields[0].post_id);
+                                post.edit(`${star} ${stars.count} in ${message.channel.toString()}`, { embed });
+                            } catch (e) {
+                                return;
+                            }
     
                             this.client.connection.query(`UPDATE starboard SET stars = ${stars.count} WHERE message_id = '${message.id}';`);
                         }
                     } else {
-                        const post = await channel.messages.fetch(fields[0].post_id);
-                        post.delete();
+                        try {
+                            const post = await channel.messages.fetch(fields[0].post_id);
+                            post.delete();
+                        } catch (e) {
+                            return;
+                        }
     
                         this.client.connection.query(`DELETE FROM starboard WHERE message_id = '${message.id}';`);
                     }
