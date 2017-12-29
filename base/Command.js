@@ -38,6 +38,15 @@ module.exports = class Base {
         return this.message.channel.send(`✅ | ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
+    query(sql) {
+        return new Promise((resolve, reject) => {
+            this.client.connection.query(sql, (err, result) => {
+                if (err) return reject(err);
+                return resolve(result);
+            });
+        });
+    }
+
     s(size) {
         return size === 1 ? "" : "s";
     }
