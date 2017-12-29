@@ -6,6 +6,7 @@
         "react/require-extension": "off",
         "no-eval": "off",
         "no-confusing-arrow": "off",
+        "no-underscore-dangle": "off",
         "radix": "off"
     }
 }
