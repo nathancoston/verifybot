@@ -1,70 +1,97 @@
+body.dark {
+  background-color: #333 !important;
+  color: white !important;
+}
+
+.nav .nav-link {
+  color: rgb(175, 175, 175);
+}
+
+body.dark .alert-danger {
+  background-color: rgba(220, 53, 69, 0.7) !important;
+  border-color: rgba(220, 53, 69, 0.5) !important;
+  color: white !important;
+}
+
 .container.body {
-    width: 90%;
-    margin-top: 3%;
+  margin-top: 3%;
+}
+
+.container.footer {
+  position: fixed;
+  bottom: 3%;
+  left: 3%;
+}
+
+ul.nostyle {
+  list-style-type: none;
+}
+
+*[data-toggle="tooltip"] {
+  cursor: pointer;
+}
+
+.form-group {
+  width: 90%;
+}
+
+@media (min-width: 768px) {
+  .container.body {
+    width: 50;
   }
   
-  .nav-link,
-  button {
-    cursor: pointer;
+  .form-group {
+    width: 40%;
   }
-  
-  .container.footer {
-    border-top: 1px solid #ddd;
-    margin-top: 5%;
-    padding: 0.5%;
-  }
-  
-  .tag {
-    display: inline-block;
-    padding: 0.5%;
-    margin: 0 1%;
-  }
-  
-  .card {
-    margin-bottom: 5%;
-  }
-  
-  *[data-toggle="tooltip"] {
-    cursor: pointer;
-  }
-  
-  .bg-jrhelper {
-    background-color: #5555ff !important;
-    color: white;
-  }
-  
-  .bg-helper {
-    background-color: #55ffff !important;
-    color: black;
-  }
-  
-  .bg-expert {
-    background-color: #ffff55 !important;
-    color: black;
-  }
-  
-  .bg-jrmod {
-    background-color: #ffff55 !important;
-    color: black;
-  }
-  
-  .bg-mod {
-    background-color: #00AA00 !important;
-    color: white;
-  }
-  
-  .bg-admin {
-    background-color: #FF5555 !important;
-    color: white;
-  }
-  
-  .bg-owner {
-    background-color: #AA0000 !important;
-    color: white;
-  }
-  
-  @media (min-width: 768px) {
-    .container.body {
-      width: 50;
-    }
-  }
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  border-radius: 34px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #555;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #ddd;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #ddd;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
