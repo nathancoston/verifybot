@@ -1,13 +1,10 @@
 {
-  "name": "verifybot_dashboard",
-  "version": "1.0.0",
+  "name": "verifybot",
+  "version": "2.0.0",
   "description": "",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "index.js",
   "author": "RedstoneDaedalus",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.2",
     "discord.js": "github:hydrabolt/discord.js",
