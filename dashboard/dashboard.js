@@ -72,7 +72,7 @@ module.exports = (client) => {
     }, passport.authenticate("discord"));
 
     app.get("/callback", passport.authenticate("discord", { failureRedirect: "/error" }), (req, res) => {
-        res.redirect("/verify");
+        res.redirect("/");
     });
 
     app.get("/error", (req, res) => {
@@ -86,10 +86,10 @@ module.exports = (client) => {
 
     app.get("/logout", (req, res) => {
         req.logout();
-        res.redirect("/verify");
+        res.redirect("/");
     });
 
-    app.get("/verify", checkAuth, async (req, res) => {
+    app.get("/", checkAuth, async (req, res) => {
         const data = { error: null, message: null };
 
         if (req.query.error) data.error = req.query.error;
@@ -110,10 +110,9 @@ module.exports = (client) => {
                 if (!member) return res.status(404);
 
                 member.setNickname(accInfo.data.player_name).catch(() => null);
-                member.addRole(member.guild.roles.find("name", "Verified")).catch(console.log);
+                member.addRole(member.guild.roles.find("name", "Verified")).catch(() => null);
 
                 client.tokens.delete(req.user.id);
-                client.log(`**${req.user.username}#${req.user.tag}** has been verified as **${accInfo.data.player_name}**.`, client.config.webhooks.verification);
 
                 client.connection.query(`UPDATE linked_accounts SET discord_id = ${req.user.id}, secret_key = null WHERE player_name = '${accInfo.data.player_name.replace(/[^a-z_\d]/ig)}'`);
             }
@@ -121,7 +120,7 @@ module.exports = (client) => {
             return;
         }
 
-        res.render(`${templateDir}/verify.ejs`, {
+        res.render(`${templateDir}/index.ejs`, {
             client,
             data,
             path: req.path,
@@ -134,36 +133,80 @@ module.exports = (client) => {
     app.get("/staff", checkAuth, async (req, res) => {
         const perms = await client.permLevel(req.user.id);
 
-        if (perms < 2) return res.status(404);
+        if (perms.level < 2) return res.status(404);
 
-        client.connection.query(`SELECT player_name, player_uuid FROM linked_accounts WHERE discord_id = '${req.user.id}';`, (err, fields) => {
-            if (err) throw err;
+        const member = await client.guilds.get(client.config.guild).members.fetch(req.user.id);
 
-            client.connection.query(`SELECT support, moderation FROM ranks WHERE uuid = '${fields[0].player_uuid}';`, async (error, data) => {
-                res.render(`${templateDir}/staff.ejs`, {
-                    client,
-                    data: data[0],
-                    auth: true,
-                    user: req.user,
-                    playername: fields[0].player_name
-                });
-            });
+        const account = await client.query(`SELECT * FROM linked_accounts WHERE discord_id = '${req.user.id}';`);
+        const sessions = await client.query(`SELECT * FROM support_sessions WHERE staff = '${account[0].player_name}';`);
+        const queue = await client.query(`SELECT * FROM support_queue;`);
+
+        let reports = null;
+
+        if (perms.level >= 4) {
+            reports = await member.guild.channels.find("name", "reports").messages.fetch({ limit: 25 });
+            reports = reports.filter(r => (!r.reactions.first() || r.reactions.first().count === 0) && (r.embeds.length > 0 || r.attachments.size > 0));
+        }
+
+        res.render(`${templateDir}/staff.ejs`, {
+            client,
+            auth: true,
+            user: req.user,
+            perms,
+            member,
+            error: req.query.error || null,
+            message: req.query.message || null,
+            ms: require("pretty-ms"),
+            data: {
+                account: account[0],
+                sessions,
+                queue,
+                reports
+            }
         });
     });
 
-    app.post("/verify", checkAuth, async (req, res) => {
+    app.post("/staff", checkAuth, async (req, res) => {
         const perms = await client.permLevel(req.user.id);
-        const member = client.guilds.get(client.config.guild).members.get(req.user.id);
+        const member = await client.guilds.get(client.config.guild).members.fetch(req.user.id);
+
+        if (perms.level < 2) return res.status(404);
+
+        if (req.body.username) {
+            const target = member.guild.members.get(req.body.username) || member.guild.members.find("displayName", req.body.username);
+            if (!target) return res.redirect("/staff?error=Unable to locate target. This user may not be cached for the bot, meaning there is currently no way to access them.");
+
+            try {
+                if (req.body.message) await target.send(`You have been ${req.body.action === "kick" ? "kicked" : `${req.body.action}"ned"`} by a moderator${req.body.reason ? `for \`${req.body.reason}\`` : ""}`);
+
+                if (req.body.action === "kick") {
+                    target.kick(req.body.reason);
+                } else if (req.body.action === "softban") {
+                    target.ban({ reason: req.body.reason, days: 7 }).then(() => target.guild.unban(target.id, "Softban Unban"));
+                } else if (req.body.action === "ban") {
+                    target.ban({ reason: req.body.reason });
+                }
+            } catch (e) {
+                res.redirect("/staff?error=An error occured whilst attempting to perform this action.");
+            }
+
+            res.redirect(`/staff?message=Successfully executed ${req.body.action} on ${target.displayName}.`);
+        }
+    });
+
+    app.post("/", checkAuth, async (req, res) => {
+        const perms = await client.permLevel(req.user.id);
+        const member = await client.guilds.get(client.config.guild).members.fetch(req.user.id);
         
-        if (!member) return res.redirect("/verify?error=You are not on the DiamondFire discord server!");
-        //if (perms.level >= 1) return res.redirect(`/verify?error=You are already verified!`);
-        if (!req.body.username || !req.body.key) return res.redirect("/verify?error=You need to fill out both your Minecraft username and key.");
+        if (!member) return res.redirect("?error=You are not on the DiamondFire discord server!");
+        if (perms.level >= 1) return res.redirect(`?error=You are already verified!`);
+        if (!req.body.username || !req.body.key) return res.redirect("?error=You need to fill out both your Minecraft username and key.");
 
         //Cooldown
         let attempts = client.attempts.get(req.user.id) || 0;
         let cooldown = client.cooldowns.get(req.user.id) || Date.now();
 
-        if (cooldown > Date.now()) return res.redirect("/verify?error=You are on cooldown. Please try again later.");
+        if (cooldown > Date.now()) return res.redirect("?error=You are on cooldown. Please try again later.");
 
         client.connection.query(`SELECT player_name, secret_key FROM linked_accounts WHERE secret_key = '${req.body.key.replace(/[^a-z\d]/ig, "")}'`, async (err, fields) => {
             if (err) throw err;
@@ -180,13 +223,13 @@ module.exports = (client) => {
 
                     member.ban({ reason: "10 attempts at verification." }).catch(() => null);
 
-                    return res.redirect("/verify?error=Your key is invalid. Since you have over 10 attempts, you have been banned from the discord server.");
+                    return res.redirect("?error=Your key is invalid. Since you have over 10 attempts, you have been banned from the discord server.");
                 }
 
                 client.attempts.set(req.user.id, attempts);
                 client.cooldowns.set(req.user.id, cooldown);
 
-                return res.redirect(`/verify?error=Your key is invalid. Please wait for ${attempts >= 7 ? "10 minutes" : "1 minute"} before verifying yourself again.`);
+                return res.redirect(`?error=Your key is invalid. Please wait for ${attempts >= 7 ? "10 minutes" : "1 minute"} before verifying yourself again.`);
             }
 
             client.attempts.delete(req.user.id);
@@ -197,16 +240,16 @@ module.exports = (client) => {
 
             const timestamp = new Date();
 
-            res.redirect("/verify?message=Check your private messages on discord.");
+            res.redirect("?message=Check your private messages on discord.");
 
             member.user.send({ embed: {
                 color: 3060589,
                 author: {
                     name: "Confirm Verification"
                 },
-                description: `Click [here](${client.config.dashboard.domain}/verify?token=${token}) to verify your account. This will expire in **3** minutes.`,
+                description: `Click [here](${client.config.dashboard.domain}?token=${token}) to verify your account. This will expire in **3** minutes.`,
                 timestamp
-            } }).catch(() => res.redirect("/verify?error=You do not have direct messages enabled."));
+            } }).catch(() => res.redirect("?error=You do not have direct messages enabled."));
 
             setTimeout(() => {
                 client.tokens.delete(req.user.id);
