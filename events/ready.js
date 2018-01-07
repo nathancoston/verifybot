@@ -11,8 +11,7 @@ module.exports = class {
 
         require("../dashboard/dashboard")(this.client); //eslint-disable-line global-require
 
-        this.client.loop();
-
+        this.client.user.setGame("www.mcdiamondfire.com");
         const reboot = JSON.parse(readFileSync("restart.json"));
         const message = await this.client.channels.get(reboot.channel).messages.fetch(reboot.id);
         message.edit(`✅ | Successfully rebooted in ${Date.now() - message.createdTimestamp}ms.`);
