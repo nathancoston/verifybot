@@ -3,5 +3,4 @@ config.json
 package-lock.json
 .vscode
 node_modules
-dashboard/templates/staff.ejs
 restart.json
