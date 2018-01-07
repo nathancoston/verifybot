@@ -1,6 +1,20 @@
 const { perms } = require("../levels.json");
 
-module.exports = class Base {
+/**
+ * Represents a command.
+ */
+class Command {
+    /**
+     * @param {Client} client The client passed to the command.
+     * @param {Object} options The properties of the command.
+     * @param {String} options.name The name of the command.
+     * @param {String} options.description The description of the command.
+     * @param {String} options.usage The command usage.
+     * @param {String} options.category The category for the cmomand.
+     * @param {Number} options.permLevel The permission level required for the command.
+     * @param {Number} options.cooldown The cooldown time on a command.
+     * @param {Array} options.aliases The command aliases. 
+     */
     constructor(client, options) {            
         this.client = client;
         
@@ -38,15 +52,6 @@ module.exports = class Base {
         return this.message.channel.send(`✅ | ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
-    query(sql) {
-        return new Promise((resolve, reject) => {
-            this.client.connection.query(sql, (err, result) => {
-                if (err) return reject(err);
-                return resolve(result);
-            });
-        });
-    }
-
     s(size) {
         return size === 1 ? "" : "s";
     }
@@ -54,4 +59,6 @@ module.exports = class Base {
     get permLevel() {
         return perms.find(p => p.level === this.conf.level) || perms[0];
     }
-};
+}
+
+module.exports = Command;
