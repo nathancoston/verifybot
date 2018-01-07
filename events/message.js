@@ -6,18 +6,21 @@ module.exports = class {
     }
 
     async run(message) {
-        /* Run checks */
+        // Run checks
         if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id) return;
 
-        /* Permissions */
+        this.client.currentData.set("messages", (this.client.currentData.get("messages") || 0) + 1);
+
+        // Calculate permissions
         const userPerms = await this.client.permLevel(message.author.id);
 
-        /* Command arguments */
+        // Process command arguments
         const args = message.content.split(/\s+/g);
         const command = args.shift().slice(this.client.config.prefix.length);
 
         let cmd;
 
+        // Check for command
         if (this.client.commands.has(command)) {
             cmd = this.client.commands.get(command);
         } else if (this.client.aliases.has(command)) cmd = this.client.commands.get(this.client.aliases.get(command));
@@ -31,6 +34,7 @@ module.exports = class {
 
         if (userPerms.level < cmd.conf.level) return cmd.error(`Your permission level is too low to execute this command. You are permission level \`${userPerms.level}\` (**${userPerms.name}**) and this command required level \`${cmd.conf.level}\` (**${levels.perms.find(p => p.level === cmd.conf.level).name}**).`);
 
+        // Run command
         cmd.run(message, args, userPerms);
 
         if (cmd.conf.cooldown > 0) {
