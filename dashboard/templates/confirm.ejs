@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html>
     <%- include("blocks/head.ejs") %>
-    <body>
-        <nav class="navbar navbar-expand-md navbar-light bg-none">
-            <a class="navbar-brand" href="staff.html"><span class="fa fa-lock"></span> Staff Panel</a>
-          </nav>
-        
+    <body>        
           <div class="container body">
             <% if (!data) { %>
                 <div class="alert alert-danger">
-                    Invalid or expired token. <a href="/verify" class="btn btn-outline-danger">Try again</a>
+                    Invalid or expired token. <a href="/" class="btn btn-outline-danger">Try again</a>
                 </div>
             <% } else { %>
                 <div class="alert alert-success">
