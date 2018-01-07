@@ -1,46 +1,165 @@
 <!DOCTYPE html>
-<html>
-    <%- include("blocks/head.ejs") %>
-    <body>
-        <nav class="navbar navbar-expand-md navbar-light bg-none">
-            <a class="navbar-brand mr-auto" href="staff.html"><span class="fa fa-lock"></span> Staff Panel</a>
-            <span class="navbar-text"><%= playername %></span>
-          </nav>
-        
-          <div class="container body">
-            <% let rankNames = {
-                support: [null, "Jrhelper", "Helper", "Expert"],
-                moderation: [null, "Jrmod", "Moderator", "Administrator", "Owner"]
-            },
-            rankColors = {
-                support: [null, "#5555ff", "#55ffff", "#ffff55"],
-                moderation: [null, "#ffff55", "#00aa00", "#ff5555", "#aa0000"]
-            };
-            
-            if (data.support) { %>
-                <div class="card">
-                    <div class="card-header bg-<%= rankNames.support[data.support].toLowerCase() %>">
-                        Support Panel
-                    </div>
-                    <div class="card-body">
-                        <p>
-                            <h3>Your Tags</h3>
-                            <kbd style="color: <%= rankColors.support[data.support] %>"><%= rankNames.support[data.support] %></kbd>
-                            <% if (data.moderation) { %>
-                                <kbd style="color: <%= rankColors.moderation[data.moderation] %>"><%= rankNames.moderation[data.moderation] %></kbd>
-                            <% } %>
-                        </p>
+<html lang="en">
 
-                        <p>
-                            <h3>Queue</h3>
-                        </p>
-                    </div>
+<%- include("blocks/head.ejs") %>
+
+<body>
+        <nav class="navbar navbar-expand-md navbar-dark bg-none">
+                <a class="navbar-brand" href="#"><span class="fa fa-lock"></span> Staff Panel</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content" aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="nav-content">
+                  <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="support-tab" data-toggle="pill" href="#support" role="tab" aria-controls="support" aria-selected="true">Support</a>
+                    </li>
+                    <% if (perms.level >= 4) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" id="mod-tab" data-toggle="pill" href="#mod" role="tab" aria-controls="mod" aria-selected="false">Mod</a>
+                        </li>
+                    <% } %>
+                    <% if (perms.level >= 5) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" id="admin-tab" data-toggle="pill" href="#admin" role="tab" aria-controls="admin" aria-selected="false">Admin</a>
+                        </li>
+                    <% } %>
+                  </ul>
                 </div>
-            <% }
-            if (data.moderation) { %>
-            <% } %>
-          </div>
-        
-          <%- include("blocks/footer.ejs") %>
-    </body>
+              </nav>
+              
+              <div class="container-fluid" style="margin-top: 3%;">
+                <% if (error) { %>
+                    <div class="alert alert-danger fade show">
+                        <strong>Error: </strong> <%- error %>
+                        <button type="button" class="close d-none d-md-block" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% } %>
+                <% if (message) { %>
+                    <div class="alert alert-success fade show">
+                        <strong>Success: </strong> <%- message %>
+                        <button type="button" class="close d-none d-md-block" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% } %>
+                <div class="tab-content" id="pills-tabContent">
+                  <div class="tab-pane fade show active" id="support" role="tabpanel" aria-labelledby="support-tab">
+                    <h3>Your Roles <div class="badge badge-info"></h3>
+                    <ul class="nostyle">
+                      <li>
+                        <%- member.roles.filter(r => ["Support", "Moderator", "Expert", "Administrator"].includes(r.name)).sort((a, b) => a.comparePositionTo(b)).map(r => `<kbd style="color:${r.hexColor}">${r.name}</kbd>`).join(" "); %>
+                      </li>
+                      <li>You are permission level <b><%= perms.level %></b> (<kbd><%= perms.name %></kbd>)</li>
+                    </ul>
+              
+                    <h3>Support Stats</h3>
+                    <ul>
+                      <li><b><%= data.sessions.length; %></b> total sessions.</li>
+                      <li><b><%= Array.from(new Set(data.sessions.map(s => s.name))).length; %></b> individual players helped.</li>
+                      <li><b><%= ms(data.sessions.reduce((t, s) => t += s.duration, 0,), { verbose: true }); %></b> of session time.</li>
+                      <li><b><%= data.sessions.filter(s => new Date(new Date().setDate(new Date().getDate() - 30)) - s.time > 0).length; %></b> sessions this month.</li>
+                    </ul>
+              
+                    <h3>Support Queue <div class="badge badge-info"><%- data.queue.length %></div></h3>
+                    <ol>
+                      <%- data.queue.sort((a, b) => a.enter_time - b.enter_time).map(i => `<li>${i.player}</li>`).join("\n"); %>
+                    </ol>
+                  </div>
+
+                  <% if (perms.level >= 4) { %>
+                    <div class="tab-pane fade" id="mod" role="tabpanel" aria-labelledby="mod-tab">
+                        <h3>Unhandled Reports <div class="badge badge-info"><%- data.reports.size %></div></h3>
+                        <ul>
+                            <%- data.reports.map(r => `<li>${r.content.replace(/(http|https):\/\/.+/ig, "")}</li>`).join("\n"); %>
+                        </ul>
+                        
+                        <h3>Manage Users</h3>
+                        <ul class="nostyle">
+                            <li>
+                                <form method="post">
+                                    <div class="form-group">
+                                        <label>Discord name or ID</label>
+                                        <input type="text" class="form-control" name="username">
+                                    </div>
+                                        <div class="form-group">
+                                        <label>Reason</label>
+                                    <textarea class="form-control" name="reason"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Action</label>
+                                        <select class="form-control" name="action">
+                                            <option value="kick">Kick</option>
+                                            <option value="softban">Softban</option>
+                                            <option value="ban">Ban</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" name="message" checked class="form-check-input">
+                                        <label class="form-check-label">Message the user</label>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary"><span class="fa fa-cog"></span> Execute</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                  <% } %>
+                  <% if (perms.level >= 5) { %>
+                    <div class="tab-pane fade" id="admin" role="tab-panel" area-labelledby="admin">
+                        <h3>Server Statistics</h3>
+                        <ul>
+                            <li><strong><%= member.guild.members.filter(m => m.roles.exists("name", "Verified")).size; %></strong> verified users.</li>
+                            <li><strong><%= member.guild.members.filter(m => !m.roles.exists("name", "Verified")).size; %></strong> unverified users.</li>
+                            <li><strong><%= member.guild.members.filter(m => m.presence.status !== "offline").size; %></strong> online users.</li>
+                            <li>Bot up for <strong><%= ms(client.uptime, { verbose: true }); %></strong>.</li>
+                        </ul>
+
+                        <h3>Activity</h3>
+                        <div style="width: 600px">
+                            <canvas id="activity-chart" style="background: white; padding: 10px">
+                                Your browser does not support this feature.
+                            </canvas>
+                        </div>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+
+  <%- include("blocks/footer.ejs") %>
+
+  <% if (perms.level >= 5) { %>
+    <% let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    client.data.map(entry => {
+        const hour = entry.time.getHours();
+        data.splice(hour - 1, 1, entry.time.messages);
+    });
+     
+    data = `[${data.join(", ")}]`;
+    %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+
+    <script>
+        new Chart(document.getElementById("activity-chart"), {
+            type: "line",
+            data: {
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24].map(l => `${l}:00`),
+                datasets: [
+                    {
+                        label: "Messages",
+                        data: <%- data %>,
+                        fill: false,
+                        backgroundColor: "rgb(255,99,132)",
+                        borderColor: "rgb(255,99,132)"
+                    }
+                ]
+            }
+        });
+    </script>
+  <% } %>
+</body>
+
 </html>
