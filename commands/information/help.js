@@ -13,8 +13,10 @@ module.exports = class Help extends Base {
     }
 
     run(message, args, perms) {
+        // Fetch a list of commands that the user can use
         const commands = this.client.commands.filter(c => c.conf.level <= perms.level);
 
+        // Send full help list
         if (args.length === 0) {
             const output = [];
 
@@ -28,6 +30,8 @@ module.exports = class Help extends Base {
             });
 
             message.author.send(`[ Commands ]\n\n${output.join("\n\n")}`, { code: "asciidoc" }).catch(() => super.error("You are blocking direct messages."));
+
+            // Send specific command help
         } else {
             const command = commands.find(c => c.help.name === args[0].toLowerCase());
             if (!command) return super.error("Unknown command.");
