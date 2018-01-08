@@ -139,9 +139,8 @@ class CustomClient extends Client {
 
     /**
      * The code ran every 15 minutes.
-     * @static
      */
-    static loop() {
+    loop() {
         this.connection.query("SELECT discord_id, player_name FROM linked_accounts", (err, fields) => {
             if (err) throw err;
 
