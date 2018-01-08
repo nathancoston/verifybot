@@ -63,8 +63,8 @@ class Command {
      * @param {String} content The content of a message
      * @returns {Promise<Message>} The message sent
      */
-    respond(content) {
-        return this.message.channel.send(`${this.message.author} | ✅ | ${content}`).then(m => m.delete({ timeout: 15000 }));
+    respond(content, options = { showCheck: true }) {
+        return this.message.channel.send(`${this.message.author} |${options.showCheck ? " ✅ |" : ""} ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
     /**
