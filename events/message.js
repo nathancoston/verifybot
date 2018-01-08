@@ -6,37 +6,39 @@ module.exports = class {
     }
 
     async run(message) {
-        // Run checks
-        if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id) return;
+        // Ignore if sender is bot, user is on cooldown, or if guild is invalid
+        if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id || this.client.commandCooldowns.has(message.author.id)) return;
 
         this.client.currentData.set("messages", (this.client.currentData.get("messages") || 0) + 1);
 
         // Calculate permissions
         const userPerms = await this.client.permLevel(message.author.id);
 
-        // Process command arguments
+        // Fetch command name and arguments
         const args = message.content.split(/\s+/g);
         const command = args.shift().slice(this.client.config.prefix.length);
 
         let cmd;
 
-        // Check for command
+        // Find command
         if (this.client.commands.has(command)) {
             cmd = this.client.commands.get(command);
         } else if (this.client.aliases.has(command)) cmd = this.client.commands.get(this.client.aliases.get(command));
 
         if (!cmd) return;
 
+        // Delete message containing command
         message.delete();
+        // Define command message
         cmd.message = message;
 
-        if (this.client.commandCooldowns.has(message.author.id)) return;
-
+        // Throw error is permissions are too low
         if (userPerms.level < cmd.conf.level) return cmd.error(`Your permission level is too low to execute this command. You are permission level \`${userPerms.level}\` (**${userPerms.name}**) and this command required level \`${cmd.conf.level}\` (**${levels.perms.find(p => p.level === cmd.conf.level).name}**).`);
 
         // Run command
         cmd.run(message, args, userPerms);
 
+        // Put the user on cooldown
         if (cmd.conf.cooldown > 0) {
             this.client.commandCooldowns.add(message.author.id);
 

@@ -32,11 +32,11 @@ class CustomClient extends Client {
         }, 900000);
 
         //Data collection
-        const now = new Date();
+        /*const now = new Date();
         const delay = 60 * 60 * 1000;
-        const start = delay - (now.getMinutes() * 60 + now.getSeconds() * 1000 + now.getMilliseconds());
+        const start = delay - (now.getMinutes() * 60 + now.getSeconds() * 1000 + now.getMilliseconds()); //eslint-disable-line no-mixed-operators
 
-        /*setTimeout(() => {
+        setTimeout(() => {
             if (this.currentData.getHours() === 0) this.data.deleteAll();
                 const time = new Date();
                 time.setHours(time.getHours() - 1);

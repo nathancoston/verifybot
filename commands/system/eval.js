@@ -13,17 +13,23 @@ module.exports = class Eval extends Base {
     }
 
     run(message) {
+        // Fetch time started
         const start = Date.now();
+        // Creates a promise containing the result of the evaluation
         const result = new Promise((r) => r(eval(message.content.split(" ").slice(1).join(" "))));
-    
+
+        // When evaluation is complete...
         result.then(output => {
-          const out = inspect(output);
-    
-          super.respond(`Evaluated successfully (${Date.now() - start}ms)\`\`\`js\n${out}\`\`\``).catch(() => super.error("Output too long to send."));
+            // Turn the output into a string
+            const out = inspect(output);
+            // Respond with the stringified output
+            super.respond(`Evaluated successfully (${Date.now() - start}ms)\`\`\`js\n${out}\`\`\``).catch(() => super.error("Output too long to send."));
+            // If an error occurs...
         }).catch(err => {
-          const error = inspect(err);
-    
-          super.error(`Errored (${Date.now() - start}ms)\`\`\`js\n${error}\`\`\``).catch(() => super.error("Output too long to send"));
+            // Turn the error into a string
+            const error = inspect(err);
+            // Respond with the stringified error
+            super.error(`Errored (${Date.now() - start}ms)\`\`\`js\n${error}\`\`\``).catch(() => super.error("Output too long to send"));
         });
     }
 };

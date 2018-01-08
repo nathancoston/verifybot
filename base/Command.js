@@ -34,9 +34,14 @@ class Command {
         this.message = null;
     }
 
+    /**
+     * Fetches a user from a mention
+     * @param {String} user A user mention in the form of a string
+     * @returns {Promise<User>} The user mentioned 
+     */
     verifyUser(user) {
         return new Promise((resolve, reject) => {
-            const match = /(?:<@!?)?([0-9]{17,20})?/ig.exec(user);
+            const match = /(?:<@!?)?(\d{15,21})?/ig.exec(user);
             if (!match) return reject("Unable to match provided mention.");
             
             const id = match[1];
@@ -44,18 +49,37 @@ class Command {
         });
     }
 
+    /**
+     * Throws an error
+     * @param {String} content The content of the error
+     * @returns {Promise<Message>} The message sent 
+     */
     error(content) {
         return this.message.channel.send(`❌ | ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
+    /**
+     * Responds to the command
+     * @param {String} content The content of a message
+     * @returns {Promise<Message>} The message sent
+     */
     respond(content) {
         return this.message.channel.send(`✅ | ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
+    /**
+     * Returns an "s" if size is greater than 1, or an empty string if not
+     * @param {Number} size The size of the item
+     * @returns {String}
+     */
     s(size) {
         return size === 1 ? "" : "s";
     }
 
+    /**
+     * Fetches the command's required permission level
+     * @returns {PermLevel} The command's required permission level
+     */
     get permLevel() {
         return perms.find(p => p.level === this.conf.level) || perms[0];
     }

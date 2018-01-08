@@ -1,5 +1,4 @@
 const Base = require("../../base/Command");
-const { promisify } = require("util");
 const { writeFile } = require("fs");
 
 module.exports = class Restart extends Base {
@@ -15,8 +14,11 @@ module.exports = class Restart extends Base {
     }
 
     async run(message) {
+        // Send a message notifying the user of a restart
         const msg = await message.channel.send(`<a:typing:398270961163436044> | Restarting...`);
+        // Write information to restart.json
         writeFile("restart.json", `{ "id": "${msg.id}", "channel": "${message.channel.id}" }`, () => {
+            // When write is complete, end process
             process.exit(1);
         });
     }
