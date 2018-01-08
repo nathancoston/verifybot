@@ -55,7 +55,7 @@ class Command {
      * @returns {Promise<Message>} The message sent 
      */
     error(content) {
-        return this.message.channel.send(`❌ | ${content}`).then(m => m.delete({ timeout: 15000 }));
+        return this.message.channel.send(`${this.message.author} | ❌ | ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
     /**
@@ -64,7 +64,7 @@ class Command {
      * @returns {Promise<Message>} The message sent
      */
     respond(content) {
-        return this.message.channel.send(`✅ | ${content}`).then(m => m.delete({ timeout: 15000 }));
+        return this.message.channel.send(`${this.message.author} | ✅ | ${content}`).then(m => m.delete({ timeout: 15000 }));
     }
 
     /**
