@@ -151,12 +151,6 @@ class CustomClient extends Client {
                 }).catch(() => this.connection.query(`DELETE FROM linked_accounts WHERE discord_id = '${player.discord_id}';`));
             });
         });
-
-        this.connection.query("SELECT @playercount;", (err, fields) => {
-            if (err || !fields[0]) return this.user.setPresence({ status: "dnd", game: { name: "MySQL error" } });
-            
-            this.user.setActivity(`with ${fields[0].playercount} players`);
-        });
     }
 
     /**
