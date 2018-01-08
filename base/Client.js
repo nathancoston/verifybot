@@ -132,7 +132,6 @@ class CustomClient extends Client {
      */
     start(token) {
         super.login(token);
-        super.emit("login_start");
 
         return this;
     }
