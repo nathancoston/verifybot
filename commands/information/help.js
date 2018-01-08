@@ -35,7 +35,7 @@ module.exports = class Help extends Base {
             });
 
             // Send the user the formatted output
-            message.author.send(`[ Commands ]\n\n${output.join("\n\n")}`, { code: "asciidoc" }).catch(() => super.error("You are blocking direct messages."));
+            message.author.send(`[ Commands ]\n\n${output.join("\n\n")}`, { code: "asciidoc" }).then(() => super.resond("Check your direct messages.")).catch(() => super.error("Please enable direct messages to recieve help."));
 
             // Send specific command help
         } else {
@@ -76,7 +76,7 @@ module.exports = class Help extends Base {
                         inline: true
                     }
                 ]
-            } }).catch(console.log);
+            } }).then(() => super.resond("Check your direct messages.")).catch(() => super.error("Please enable direct messages to recieve help."));
         }
     }
 
