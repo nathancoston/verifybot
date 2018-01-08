@@ -23,7 +23,9 @@ module.exports = class {
         const reboot = JSON.parse(readFileSync("restart.json"));
         // Fetch reboot message
         const message = await this.client.channels.get(reboot.channel).messages.fetch(reboot.id);
+        // Edit to get time
+        await message.edit("Fetching...");
         // Update reboot timestamp
-        message.edit(`✅ | Successfully rebooted in ${Date.now() - message.createdTimestamp}ms.`);
+        message.edit(`✅ | Successfully rebooted in ${message.editedTimestamp - message.createdTimestamp}ms.`);
     }
 };
