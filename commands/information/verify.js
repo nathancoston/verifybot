@@ -11,6 +11,6 @@ module.exports = class Ping extends Command {
     }
 
     run() {
-        super.respond(`Please go to the website to verify yourself: ${this.client.config.dashboard.domain}`);
+        super.respond(`Please go to the website to verify yourself: ${this.client.config.dashboard.domain}`, { showCheck: false });
     }
 };
