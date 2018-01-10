@@ -28,6 +28,6 @@ module.exports = class Pull extends Command {
         if (stderror) out.push(stderror);
 
         await message.channel.send(out.join("---\n"), { code: true });
-        if (!stdout.toString().includes("Already up-to-date.")) this.client.commands.get("restart").run(message);
+        if (!stdout.toString().includes("Already up to date.")) this.client.commands.get("restart").run(message);
     }
 };
