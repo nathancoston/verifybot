@@ -5,6 +5,10 @@
   "main": "index.js",
   "author": "RedstoneDaedalus",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedstoneDaedalus/verifybot.git"
+  },
   "dependencies": {
     "body-parser": "^1.18.2",
     "discord.js": "github:hydrabolt/discord.js",
