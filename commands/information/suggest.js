@@ -11,7 +11,7 @@ module.exports = class Suggest extends Base {
         });
     }
 
-    run(message) {
+    run() {
         super.respond(`Post your suggestions on the forums. (http://www.mcdiamondfire.com/forum)`);
     }
 };
