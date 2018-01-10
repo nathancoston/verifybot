@@ -41,10 +41,14 @@ class Command {
      */
     verifyUser(user) {
         return new Promise((resolve, reject) => {
+            // Match the user mention
             const match = /(?:<@!?)?(\d{15,21})?/ig.exec(user);
+            // If no match returned, throw an error
             if (!match) return reject("Unable to match provided mention.");
             
+            // Fetch the ID from the match
             const id = match[1];
+            // Return the fetched user
             resolve(this.client.fetchUser(id));
         });
     }
