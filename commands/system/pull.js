@@ -16,7 +16,7 @@ module.exports = class Pull extends Command {
 
     async run(message) {
         // Execute pull on repository URL
-        const { stdout, stderror, error } = await exec(`git pull ${require("../../package.json").repository.url.split("+")[1]}`, { cwd: path.join(__dirname, "../../") });
+        const { stdout, stderror, error } = await exec(`git pull ${require("../../package.json").repository.url.split("+")[1]}`, { cwd: path.join(__dirname, "../../") }); //eslint-disable-line global-require
         // If error thrown, return error message
         if (error) return super.error("An unknown error occured whilst attempting to pull.");
 
@@ -28,6 +28,16 @@ module.exports = class Pull extends Command {
         if (stderror) out.push(stderror);
 
         await message.channel.send(out.join("---\n"), { code: true });
-        if (!stdout.toString().includes("Already up to date.")) this.client.commands.get("restart").run(message);
+        const notice = await message.channel.send("To update changes, you'll need to restart the bot. Respond with **y** to restart or **n** to cancel restart.");
+        
+        message.channel.awaitMessages(m => m.author.id === message.author.id && ["y", "n"].includes(m.content), { max: 1, time: 60000, errors: ["time"] })
+            .then(collected => {
+                const m = collected.first();
+                if (m.content === "y") return this.client.commands.get("restart").run(message);
+                notice.edit("To update changes, you'll need to restart the bot.");
+                super.respond("Restart canceled.");
+            }).catch(() => {
+                notice.edit("To update changes, you'll need to restart the bot.");
+            });
     }
 };
