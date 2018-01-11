@@ -1,7 +1,7 @@
 data
-dashboard
 config.json
 package-lock.json
 .vscode
+methods/restricted
 node_modules
 restart.json
