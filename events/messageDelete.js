@@ -20,11 +20,10 @@ module.exports = class {
         const embed = new MessageEmbed()
             .setColor([255, 100, 100])
             .setAuthor(`${message.member.displayName} (${message.author.tag})`)
-            .setTitle(`Deleted message in #${message.channel.name}.`)
+            .setTitle(`Message deleted in #${message.channel.name}.`)
             .setDescription(message.content)
             .setImage(message.attachments.size > 0 ? message.attachments.first().url : null)
-            .setFooter("Deleted")
-            .setTimestamp(new Date());
+            .setTimestamp();
 
         // Send the created embed
         logs.send(embed);
