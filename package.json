@@ -5,18 +5,23 @@
   "main": "index.js",
   "author": "RedstoneDaedalus",
   "license": "MIT",
+  "scripts": {
+    "init": "node setup init"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RedstoneDaedalus/verifybot.git"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
+    "commander": "^2.12.2",
     "discord.js": "github:hydrabolt/discord.js",
     "ejs": "^2.5.7",
     "events": "^1.1.1",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "helmet": "^3.9.0",
+    "inquirer": "^5.0.0",
     "level": "^2.1.0",
     "level-session-store": "^2.1.0",
     "marked": "^0.3.6",
