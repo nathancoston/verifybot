@@ -1,10 +1,12 @@
 // Run "npm run init" in console to set up VerifyBot
 
+// Module imports
 const program = require("commander");
 const { prompt } = require("inquirer");
 const { writeFile } = require("fs");
 const { inspect } = require("util");
 
+// Create a new array with queries
 const questions = [
     {
         type: "input",
@@ -53,21 +55,29 @@ const questions = [
     }
 ];
 
+// Load program information
 program
-    .version("1.0.0")
+    .version("1.0.2")
     .description("Creates a config file..");
 
+// Init command - initializes config
 program
     .command("init")
     .description("Sets a value in the config.")
     .action(() => {
+        // Prompt for all questions
         prompt(questions).then(answers => {
+            // Log that config values have been stored
             console.log("Config values created. Creating config.json...");
+            // Write to config.json with the new config values
             writeFile("config.json", JSON.stringify(answers, null, "\t"), (err) => {
+                // If error thrown, log in console
                 if (err) return console.log(`Error creating file:\n${err}`);
+                // Inform the user that config has been initialized
                 console.log("Config initalized! Warning: some features may still not be fully functional as some files are removed to maintain security of the data structures.");
             });
         });
     });
 
+// Load commands
 program.parse(process.argv);

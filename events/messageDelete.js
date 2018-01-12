@@ -7,8 +7,12 @@ module.exports = class {
     }
 
     async run(message) {
+        // Fetch logs channel
         const logs = config.logs.deleted;
+        // If no logs channel found, return false
+        if (!logs) return false;
 
+        // Create a new embed
         const embed = new MessageEmbed()
             .setColor(0xFF0000)
             .setAuthor(message.author.displayName)
@@ -16,6 +20,7 @@ module.exports = class {
             .setDescription(message.content)
             .setImage(message.attachments.size > 0 ? message.attachments.first().url : null);
 
+        // Send the created embed
         logs.send(embed);
     }
 };
