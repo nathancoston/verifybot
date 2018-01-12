@@ -45,6 +45,11 @@ const questions = [
         type: "input",
         name: "dashboard.secret",
         message: "Dashboard Secret: "
+    },
+    {
+        type: "input",
+        name: "logs.deleted",
+        message: "Deleted Messages Log (Channel Name): "
     }
 ];
 
