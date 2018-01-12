@@ -8,7 +8,7 @@ module.exports = class {
 
     async run(message) {
         // Fetch logs channel
-        const logs = config.logs.deleted;
+        const logs = this.client.channels.find("name", config.logs.deleted);
         // If no logs channel found, return false
         if (!logs) return false;
 
