@@ -14,6 +14,11 @@ const questions = [
     },
     {
         type: "input",
+        name: "prefix",
+        message: "Bot Prefix: "
+    },
+    {
+        type: "input",
         name: "credentials.token",
         message: "Bot Token: "
     },
