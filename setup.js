@@ -59,8 +59,8 @@ const questions = [
     },
     {
         type: "input",
-        name: "logs.deleted",
-        message: "Deleted Messages Log (Channel Name): "
+        name: "logs.messageUpdates",
+        message: "Message Updates Log (Channel Name): "
     }
 ];
 
