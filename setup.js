@@ -4,10 +4,14 @@
 const program = require("commander");
 const { prompt } = require("inquirer");
 const { writeFile } = require("fs");
-const { inspect } = require("util");
 
 // Create a new array with queries
 const questions = [
+    {
+        type: "input",
+        name: "guild",
+        message: "Primary Guild: "
+    },
     {
         type: "input",
         name: "credentials.token",
