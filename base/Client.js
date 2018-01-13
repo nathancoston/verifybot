@@ -1,7 +1,7 @@
-const levels = require("../levels.json");
 const { Collection, Client } = require("discord.js");
 const { readdir } = require("fs");
 const mysql = require("mysql");
+const levels = require("../levels.json");
 
 /**
  * Represents a Discord client.
