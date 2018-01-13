@@ -40,16 +40,16 @@ class Command {
      * @returns {Promise<User>} The user mentioned 
      */
     verifyUser(user) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             // Match the user mention
             const match = /(?:<@!?)?(\d{15,21})?/ig.exec(user);
-            // If no match returned, throw an error
-            if (!match) return reject("Unable to match provided mention.");
+            // If no match returned, return null
+            if (!match) return null;
             
             // Fetch the ID from the match
             const id = match[1];
-            // Return the fetched user
-            resolve(this.client.fetchUser(id));
+            // Fetch the user from the ID
+            this.client.fetchUser(id).then(resolve).catch(() => resolve(null));
         });
     }
 
