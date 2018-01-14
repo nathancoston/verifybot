@@ -25,8 +25,8 @@ module.exports = class Userinfo extends Base {
       // Create a new embed
       const embed = new MessageEmbed()
           .setColor("#FFFFFF")
-          .setAuthor(user.tag)
-          .setFooter("VerifyBot User Information");
+          .setAuthor(user.tag, user.avatarURL())
+          .setFooter("VerifyBot User Information", this.client.user.avatarURL());
 
       // Add fields
       embed.addField("» Name", user.username, true);
