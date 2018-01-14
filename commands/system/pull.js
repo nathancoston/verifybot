@@ -31,13 +31,13 @@ module.exports = class Pull extends Command {
         const notice = await message.channel.send("To update changes, you'll need to restart the bot. Respond with **y** to restart or **n** to cancel restart.");
         
         message.channel.awaitMessages(m => m.author.id === message.author.id && ["y", "n"].includes(m.content), { max: 1, time: 60000, errors: ["time"] })
-            .then(collected => {
-                const m = collected.first();
-                if (m.content === "y") return this.client.commands.get("restart").run(message);
-                notice.edit("To update changes, you'll need to restart the bot.");
-                super.respond("Restart canceled.");
-            }).catch(() => {
-                notice.edit("To update changes, you'll need to restart the bot.");
-            });
+        .then(collected => {
+            const m = collected.first();
+            if (m.content === "y") return this.client.commands.get("restart").run(message);
+            notice.edit("To update changes, you'll need to restart the bot.");
+            super.respond("Restart canceled.");
+        }).catch(() => {
+            notice.edit("To update changes, you'll need to restart the bot.");
+        });
     }
 };
