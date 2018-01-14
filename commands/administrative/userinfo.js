@@ -28,7 +28,7 @@ module.exports = class Userinfo extends Base {
     // Add fields
    embed.addField("» Name", user.username, true);
    if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
-   embed.addField("» Roles", member.roles.map(r => r.name).join(", "), true);
+   embed.addField("» Roles", member.roles.filter(r => r.id !=== member.guild.id).map(r => r.name).join(", "), true);
    embed.addField("» Joined Discord", this.humanize(user.createdAt));
    embed.addField("» Joined Server", this.humanize(member.joinedAt));
     
