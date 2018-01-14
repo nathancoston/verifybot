@@ -26,13 +26,13 @@ module.exports = class Userinfo extends Base {
       .setFooter("VerifyBot User Information");
      
     // Add fields
-    embed.addField("» Name", user.username, true);
-    if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
-    embed.addField("» Permission Level", await this.client.permLevel(user).name, true);
-    embed.addField("» Joined Discord", this.humanize(user.createdAt));
-    embed.addField("» Joined Server", this.humanize(member.joinedAt));
+   embed.addField("» Name", user.username, true);
+   if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
+   embed.addField("» Roles", member.roles.map(r => r.name).join(", "), true);
+   embed.addField("» Joined Discord", this.humanize(user.createdAt));
+   embed.addField("» Joined Server", this.humanize(member.joinedAt));
     
-    message.channel.send({ embed });
+   message.channel.send({ embed });
   }
   
   // Used to make dates easy to read
@@ -41,4 +41,5 @@ module.exports = class Userinfo extends Base {
     const months = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
   }
-}
+};
+
