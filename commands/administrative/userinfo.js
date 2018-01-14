@@ -27,7 +27,7 @@ class Userinfo extends Base {
      
      // Add fields
      embed.addField("» Name", user.username, true);
-     if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName");
+     if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
      embed.addField("» Permission Level", await this.client.permLevel(user).name, true);
      embed.addField("» Joined Discord", humanize(user.createdAt));
      embed.addField("» Joined Server", humanize(member.joinedAt));
