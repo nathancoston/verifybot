@@ -7,7 +7,7 @@ module.exports = class Stats extends Base {
         super(client, {
             name: "stats",
             description: "Check a support's stats.",
-            usage: "[user]",
+            usage: "",
             permLevel: 2,
             aliases: ["support"]
         });
