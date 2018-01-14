@@ -49,7 +49,7 @@ class Command {
             // Fetch the ID from the match
             const id = match[1];
             // Fetch the user from the ID
-            this.client.fetchUser(id).then(resolve).catch(() => resolve(null));
+            this.client.users.fetch(id).then(resolve).catch(() => resolve(null));
         });
     }
 
