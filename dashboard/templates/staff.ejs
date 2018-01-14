@@ -122,37 +122,6 @@
               </div>
 
   <%- include("blocks/footer.ejs") %>
-
-  <% if (perms.level >= 5) { %>
-    <% let data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    client.data.map(entry => {
-        const hour = entry.time.getHours();
-        data.splice(hour - 1, 1, entry.time.messages);
-    });
-     
-    data = `[${data.join(", ")}]`;
-    %>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
-
-    <script>
-        new Chart(document.getElementById("activity-chart"), {
-            type: "line",
-            data: {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24].map(l => `${l}:00`),
-                datasets: [
-                    {
-                        label: "Messages",
-                        data: <%- data %>,
-                        fill: false,
-                        backgroundColor: "rgb(255,99,132)",
-                        borderColor: "rgb(255,99,132)"
-                    }
-                ]
-            }
-        });
-    </script>
-  <% } %>
 </body>
 
 </html>
