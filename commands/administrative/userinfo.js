@@ -8,7 +8,8 @@ module.exports = class Userinfo extends Base {
             description: "Finds information on a user.",
             usage: "<user>",
             category: "administrative",
-            permLevel: 4
+            permLevel: 4,
+            aliases: ["whois"]
         });
     }
 
