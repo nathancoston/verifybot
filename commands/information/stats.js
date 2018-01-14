@@ -13,11 +13,11 @@ module.exports = class Stats extends Base {
         });
     }
 
-    async run(message, args) {
+    async run(message) {
         // Fetch support data
         const data = await fetchSupportData(this.client, message.author.id);
         // If no data returned, throw an error
-        if (!data) return super.error(`No session data found.`);
+        if (!data) return super.error(`You have not completed any sessions.`);
 
         message.channel.send([
             "**__Support Statistics__**",
