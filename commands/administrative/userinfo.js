@@ -25,12 +25,14 @@ module.exports = class Userinfo extends Base {
       .setAuthor(user.tag)
       .setFooter("VerifyBot User Information");
      
-     // Add fields
-     embed.addField("» Name", user.username, true);
-     if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
-     embed.addField("» Permission Level", await this.client.permLevel(user).name, true);
-     embed.addField("» Joined Discord", this.humanize(user.createdAt));
-     embed.addField("» Joined Server", this.humanize(member.joinedAt));
+    // Add fields
+    embed.addField("» Name", user.username, true);
+    if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
+    embed.addField("» Permission Level", await this.client.permLevel(user).name, true);
+    embed.addField("» Joined Discord", this.humanize(user.createdAt));
+    embed.addField("» Joined Server", this.humanize(member.joinedAt));
+    
+    message.channel.send({ embed });
   }
   
   // Used to make dates easy to read
