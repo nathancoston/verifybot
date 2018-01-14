@@ -29,8 +29,8 @@ module.exports = class Userinfo extends Base {
      embed.addField("» Name", user.username, true);
      if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
      embed.addField("» Permission Level", await this.client.permLevel(user).name, true);
-     embed.addField("» Joined Discord", humanize(user.createdAt));
-     embed.addField("» Joined Server", humanize(member.joinedAt));
+     embed.addField("» Joined Discord", this.humanize(user.createdAt));
+     embed.addField("» Joined Server", this.humanize(member.joinedAt));
   }
   
   // Used to make dates easy to read
