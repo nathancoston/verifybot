@@ -27,10 +27,10 @@ module.exports = class Userinfo extends Base {
      
     // Add fields
    embed.addField("» Name", user.username, true);
-   if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName);
+   if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName, true);
    embed.addField("» Roles", member.roles.filter(r => r.id !== member.guild.id).map(r => r.name).join(", "), true);
-   embed.addField("» Joined Discord", this.humanize(user.createdAt));
-   embed.addField("» Joined Server", this.humanize(member.joinedAt));
+   embed.addField("» Joined Discord", this.humanize(user.createdAt), true);
+   embed.addField("» Joined Server", this.humanize(member.joinedAt), true);
     
    message.channel.send({ embed });
   }
