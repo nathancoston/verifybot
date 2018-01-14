@@ -16,6 +16,7 @@ module.exports = class Userinfo extends Base {
     // Fetch the target user
     const user = await super.verifyUser(args[0]);
     const member = await message.guild.members.fetch(user.id);
+    const permLevel = this.client.permLevel(user.id);
     // Confirm that a user has been found
     if (!user) return super.error("Unknown user.");
     
@@ -29,6 +30,7 @@ module.exports = class Userinfo extends Base {
    embed.addField("» Name", user.username, true);
    if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName, true);
    embed.addField("» Roles", member.roles.filter(r => r.id !== member.guild.id).map(r => r.name).join(", "), true);
+   embed.addField("» Permission Level", `**${permLevel.level}** (\`${permLevel.name}\`)`);
    embed.addField("» Joined Discord", this.humanize(user.createdAt), true);
    embed.addField("» Joined Server", this.humanize(member.joinedAt), true);
     
