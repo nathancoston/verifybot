@@ -17,7 +17,7 @@ module.exports = class Stats extends Base {
         // Fetch support data
         const data = await fetchSupportData(this.client, message.author.id);
         // If no data returned, throw an error
-        if (!data) return super.error(`You have not completed any sessions.`);
+        if (!data.sessions[0]) return super.error(`You have not completed any sessions.`);
 
         message.channel.send([
             "**__Support Statistics__**",

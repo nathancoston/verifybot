@@ -158,7 +158,7 @@ module.exports = (client) => {
         const member = await client.guilds.get(client.config.guild).members.fetch(req.user.id);
 
         // Fetch account, session, and queue data
-        const { account, sessions, queue } = require("../methods/restricted/fetchSupportData")(client, req.user.id); //eslint-disable-line global-require 
+        const { account, sessions, queue } = await (require("../methods/restricted/fetchSupportData"))(client, req.user.id); //eslint-disable-line global-require 
 
         // Defined later if user is moderator or above
         let reports;
