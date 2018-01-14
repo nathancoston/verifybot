@@ -1,4 +1,4 @@
-const ms = require("ms");
+const ms = require("pretty-ms");
 const Base = require("../../base/Command.js");
 
 module.exports = class Help extends Base {
@@ -67,7 +67,7 @@ module.exports = class Help extends Base {
                     },
                     {
                         name: "» Cooldown",
-                        value: ms(command.conf.cooldown, { long: true }),
+                        value: ms(command.conf.cooldown, { verbose: true }),
                         inline: true
                     },
                     {
