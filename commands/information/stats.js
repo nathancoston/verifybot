@@ -8,8 +8,7 @@ module.exports = class Stats extends Base {
             name: "stats",
             description: "Check a support's stats.",
             usage: "",
-            permLevel: 2,
-            aliases: ["support"]
+            permLevel: 2
         });
     }
 
