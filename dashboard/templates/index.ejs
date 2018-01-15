@@ -19,6 +19,14 @@
         </button>
       </div>
     <% } %>
+    <% if (data.message) { %>
+      <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <%- data.message %>
+        <button type="button" class="close d-none d-md-block" data-dismiss="alert" aria-lable="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <% } %>
     <form method="post">
       <div class="form-group">
         <label for="username">Minecraft Username</label>
