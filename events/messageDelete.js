@@ -14,7 +14,7 @@ module.exports = class {
         // If no logs channel found, return false
         if (!logs) return false;
         // If message is a command or message is sent by a bot, ignore it
-        if ((message.content.startsWith(config.prefix) && this.client.commands.has(message.content.split(config.prefix)[1].split(" ")[0])) || message.author.bot) return;
+        if ((message.content.startsWith(config.prefix) && (this.client.commands.has(message.content.split(config.prefix)[1].split(" ")[0]) || this.client.aliases.has(message.content.split(config.prefix)[1].split(" ")[0]))) || message.author.bot) return;
 
         // Create a new embed
         const embed = new MessageEmbed()
