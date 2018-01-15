@@ -6,4 +6,4 @@ module.exports = class {
     run(error) {
         console.log(`Websocket error:\n${error}`);
     }
-}
+};
