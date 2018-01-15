@@ -169,7 +169,7 @@ class CustomClient extends Client {
      * @param {String} user The ID of the target user. 
      */
     permLevel(user) {
-        const perms = levels.perms.slice(1).sort((a, b) => b.level < a.level ? 1 : -1);
+        const perms = levels.perms.sort((a, b) => b.level < a.level ? 1 : -1);
 
         let userPerms = perms[0];
 
@@ -178,14 +178,10 @@ class CustomClient extends Client {
 
         return new Promise((resolve) => {
             guild.members.fetch(user).then(member => {
-                while (perms.length) {
-                    const current = perms.shift();
-                    if (current.role && member.roles.exists("name", current.role)) userPerms = current;
-                    if (current.ids && current.ids.includes(member.id)) userPerms = current;
-                }
-
+                userPerms = perms.filter(p => (p.role && member.roles.exists("name", p.role)) || (p.ids && p.ids.includes(user))).pop();
                 resolve(userPerms);
-            }).catch(() => {
+            }).catch((e) => {
+                console.log(e);
                 resolve(userPerms);
             });
         });
