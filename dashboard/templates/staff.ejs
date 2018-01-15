@@ -52,7 +52,7 @@
                       <li>
                         <%- member.roles.filter(r => ["Support", "Moderator", "Expert", "Administrator"].includes(r.name)).sort((a, b) => a.comparePositionTo(b)).map(r => `<kbd style="color:${r.hexColor}">${r.name}</kbd>`).join(" "); %>
                       </li>
-                      <li>You are permission level <b><%= perms.level %></b> (<kbd><%= perms.name %></kbd>)</li>
+                      <li>You are permission level <b><%= perms.level %></b> (<b><%= perms.name %></b>)</li>
                     </ul>
               
                     <h3>Support Stats</h3>
