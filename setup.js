@@ -61,6 +61,16 @@ const questions = [
         type: "input",
         name: "logs.messageUpdates",
         message: "Message Updates Log (Channel Name): "
+    },
+    {
+        type: "input",
+        name: "logs.joins",
+        message: "Join Log (Channel Name): "
+    },
+    {
+        type: "input",
+        name: "logs.verification",
+        message: "Verification Log (Channel Name): "
     }
 ];
 
