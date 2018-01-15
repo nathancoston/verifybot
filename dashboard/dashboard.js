@@ -1,5 +1,6 @@
 // Imports
 const bodyParser = require("body-parser");
+const { MessageEmbed } = require("discord.js");
 const ejs = require("ejs");
 const express = require("express");
 const session = require("express-session");
@@ -8,6 +9,8 @@ const passport = require("passport");
 const { Strategy } = require("passport-discord");
 const path = require("path");
 const uuid = require("uuid/v4");
+
+const config = require("../config.json");
 
 // Init express application
 const app = express();
@@ -130,6 +133,21 @@ module.exports = (client) => {
 
                 // Update discord ID and remove secret key
                 client.connection.query(`UPDATE linked_accounts SET discord_id = ${req.user.id}, secret_key = null WHERE player_name = '${accInfo.data.player_name.replace(/[^a-z_\d]/ig)}'`);
+
+                // Find the verification logs channel
+                const channel = member.guild.channels.find("name", config.logs.verification);
+                // If no channel found, return
+                if (!channel) return;
+                // Create a new embed
+                const embed = new MessageEmbed()
+                    .setColor([67, 181, 129])
+                    .setAuthor(`${accInfo.data.player_name} (${member.user.tag})`, member.user.avatarURL({ size: 256, format: "png" }))
+                    .setTitle("User Verified")
+                    .setDescription(`${member.user.tag} verified their account as ${accInfo.data.player_name}.`)
+                    .setTimestamp();
+
+                // Send the embed
+                channel.send({ embed });
             }
 
             return;
