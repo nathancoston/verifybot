@@ -26,8 +26,6 @@ module.exports = class Userinfo extends Base {
         // Fetch verification data
         const data = await this.client.query(`SELECT player_name, player_uuid FROM linked_accounts WHERE discord_id = '${user.id}';`);
 
-        console.log(data);
-
         // Create a new embed
         const embed = new MessageEmbed()
             .setColor("#FFFFFF")
@@ -36,7 +34,7 @@ module.exports = class Userinfo extends Base {
 
         // Add fields
         embed.addField("» Name", user.username, true);
-        emed.addField("» Discord ID", user.id, true);
+        embed.addField("» Discord ID", user.id, true);
         if (member.displayName !== user.username) embed.addField("» Nickname", member.displayName, true);
         embed.addField("» Roles", member.roles.filter(r => r.id !== member.guild.id).sort((a, b) => a.comparePositionTo(b)).map(r => r.name).join(", "), true);
         embed.addField("» Permission Level", `**${permLevel.level}** (\`${permLevel.name}\`)`, true);
