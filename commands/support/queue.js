@@ -16,7 +16,7 @@ module.exports = class Queue extends Base {
     async run(message) {
         // Fetch queue data
         const queue = await this.client.query(`SELECT * FROM support_queue;`);
-
+        // The data array is used to generate embed color, title, and description
         const data = [
             {
                 color: [67, 181, 129],
@@ -55,18 +55,25 @@ module.exports = class Queue extends Base {
             if (queue.length >= s.min) status = s;
         });
 
-        //
+        // Parse maximum spacing to make text sorted evenly
         const spacing = queue.map(c => c.player).reduce((out, p) => Math.max(p.length, out), 1);
+        // Create an empty array of entries
         let players = [];
 
+        // If queue length is larger than 1...
         if (queue.length >= 1) {
-            players = queue.map((entry, index) => {
+            // Sort players by entry time and map them
+            players = queue.sort((a, b) => a.enter_time - b.enter_time).map((entry, index) => {
+                // Create a position string
                 const pos = index >= 9 ? index + 1 : `0${index + 1}`;
+                // Fetch the time spent in queue
                 const duration = new Date() - entry.enter_time;
-                return `= ${pos}\n${entry.player + " ".repeat(spacing - entry.player.length)} :: Waited ${ms(duration, { secDecimalDigits: 0 })}`;
+                // Return <position> <player> :: Waited <duration>
+                return `${pos}) ${entry.player + " ".repeat(spacing - entry.player.length)} :: Waited ${ms(duration, { secDecimalDigits: 0, verbose: true })}.`;
             });
         }
 
+        // Join players array
         players = players.length === 0 ? "" : `\`\`\`asciidoc\n${players.join("\n")}\`\`\``;
 
         // Define embed fields
@@ -74,6 +81,7 @@ module.exports = class Queue extends Base {
         embed.setAuthor(status.status);
         embed.setDescription(status.details.replace(/{{count}}/g, queue.length) + players);
 
+        // Send the embed
         message.channel.send({ embed });
     }
 };
