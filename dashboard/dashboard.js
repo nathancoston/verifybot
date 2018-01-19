@@ -304,12 +304,17 @@ module.exports = (client) => {
         // If member is not staff, throw 404 error
         if (perms.level < 2) return res.status(404);
 
-        // If username field is filled in... (Only true when action is member management)
+        function fetchMember(id) {
+            return new Promise((resolve) => {
+                member.guild.members.fetch(id).then(resolve).catch(() => resolve(null));
+            });
+        }
+
         if (req.body.username) {
             // Fetch target member
-            const target = member.guild.members.get(req.body.username) || member.guild.members.find("displayName", req.body.username);
+            const target = await fetchMember(req.body.username) || member.guild.members.find("displayName", req.body.username);
             // If target is invalid, throw an error
-            if (!target) return res.redirect("/staff?error=Unable to locate target. This user may not be cached for the bot, meaning there is currently no way to access them.");
+            if (!target) return res.redirect("/staff?error=Unable to locate target. Please try using their user ID.");
 
             try {
                 // If instructed to notify user of the action, send them a message.
@@ -329,12 +334,35 @@ module.exports = (client) => {
                     target.ban({ reason: req.body.reason });
                 }
             } catch (e) {
-                // If an error occurs whilst executiong action, throw it
+                // If an error occurs whilst executing action, throw it
                 res.redirect("/staff?error=An error occured whilst attempting to perform this action.");
             }
 
             // Notify the user that the action was successful
             res.redirect(`/staff?message=Successfully executed ${req.body.action} on ${target.displayName}.`);
+        } else if (req.body.roles_username) {
+            // Fetch target member
+            const target = await fetchMember(req.body.roles_username);
+            // If target is invalid, throw an error
+            if (!target) return res.redirect("/staff?error=Unable to locate target. Please try using their user ID.");
+
+            try {
+                // Verify the role
+                const role = member.guild.roles.get(req.body.role);
+                // If role is invalid, throw an error
+                if (!role) return res.redirect("/staff?error=Unknown role.");
+                
+                // If action is add, give them the role
+                if (req.body.roles_action === "add") target.addRole(req.body.role);
+                // If action is remove, remove the role
+                if (req.body.roles_action === "remove") target.removeRole(req.body.role);
+
+                // Notify the user that the action was successful
+                return res.redirect(`/staff?message=Successfully ${req.body.roles_action === "add" ? "added" : "removed"} the role from ${target.displayName}.`);
+            } catch (e) {
+                // If an error occurs whilst executing action, throw it
+                res.redirect("/staff?error=An error occured whilst attempting to perform this action.");
+            }
         }
     });
 
