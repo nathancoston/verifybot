@@ -7,8 +7,8 @@ module.exports = class Suggest extends Base {
             description: "Please use the forums. (http://www.mcdiamondfire.com/forum)",
             usage: "",
             category: "information",
-            aliases: ["bug"],
-            permLevel: 0 
+            permLevel: 0,
+            aliases: ["bug"]
         });
     }
 
