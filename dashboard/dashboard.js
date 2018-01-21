@@ -357,7 +357,7 @@ module.exports = (client) => {
                 // If an error occurs whilst executing action, throw it
                 res.redirect("/staff?error=An error occured whilst attempting to perform this action.");
             }
-        }
+        } else res.redirect("/staff?error=Please fill out the form.");
     });
 
     // Listen on port 4040
