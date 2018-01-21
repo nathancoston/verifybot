@@ -312,7 +312,7 @@ module.exports = (client) => {
 
             try {
                 // If instructed to notify user of the action, send them a message.
-                if (req.body.message) await target.send(`You have been ${req.body.action === "kick" ? "kicked" : `${req.body.action}"ned"`} by a moderator${req.body.reason ? `for \`${req.body.reason}\`` : ""}`);
+                if (req.body.message) await target.send(`You have been ${req.body.action === "kick" ? "kicked" : `${req.body.action}ned`} by a moderator${req.body.reason ? ` for \`${req.body.reason}\`` : ""}`);
 
                 // If the action is a kick...
                 if (req.body.action === "kick") {
