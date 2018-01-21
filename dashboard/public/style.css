@@ -34,3 +34,8 @@ ul.nostyle {
     width: 40%;
   }
 }
+
+/* Custom Colors */
+.bg-purple {
+  background-color: var(--purple);
+}
