@@ -50,7 +50,7 @@
                     <h3>Your Roles <div class="badge badge-info"></h3>
                     <ul class="nostyle">
                       <li>
-                        <%- member.roles.filter(r => ["Support", "Moderator", "Expert", "Administrator"].includes(r.name)).sort((a, b) => a.comparePositionTo(b)).map(r => `<kbd class="bg-light" style="color:${r.hexColor}">${r.name}</kbd>`).join(" "); %>
+                        <%- member.roles.filter(r => ["Support", "Moderator", "Expert", "Administrator"].includes(r.name)).sort((a, b) => a.comparePositionTo(b)).map(r => `<kbd style="background-color:${r.hexColor}"><b>${r.name}</b></kbd>`).join(" "); %>
                       </li>
                       <li>You are permission level <b><%= perms.level %></b> (<b><%= perms.name %></b>)</li>
                     </ul>

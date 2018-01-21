@@ -304,15 +304,9 @@ module.exports = (client) => {
         // If member is not staff, throw 404 error
         if (perms.level < 2) return res.status(404);
 
-        function fetchMember(id) {
-            return new Promise((resolve) => {
-                member.guild.members.fetch(id).then(resolve).catch(() => resolve(null));
-            });
-        }
-
         if (req.body.username) {
             // Fetch target member
-            const target = await fetchMember(req.body.username) || member.guild.members.find("displayName", req.body.username);
+            const target = member.guild.members.get(req.body.username) || member.guild.members.find("displayName", req.body.username);
             // If target is invalid, throw an error
             if (!target) return res.redirect("/staff?error=Unable to locate target. Please try using their user ID.");
 
@@ -342,7 +336,7 @@ module.exports = (client) => {
             res.redirect(`/staff?message=Successfully executed ${req.body.action} on ${target.displayName}.`);
         } else if (req.body.roles_username) {
             // Fetch target member
-            const target = await fetchMember(req.body.roles_username);
+            const target = await member.guild.members.get(req.body.roles_username) || member.guild.members.find("displayName", req.body.roles_username);
             // If target is invalid, throw an error
             if (!target) return res.redirect("/staff?error=Unable to locate target. Please try using their user ID.");
 
