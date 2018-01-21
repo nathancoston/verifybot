@@ -5,7 +5,7 @@
 
 <body>
   <% if (perms.level >= 2) { %>
-    <nav class="navbar navbar-expand-md navbar-dark bg-purple">
+    <nav class="navbar navbar-expand-md navbar-dark bg-info">
       <a class="navbar-brand" href="staff"><span class="fa fa-lock"></span> Staff Panel</a>
     </nav>
   <% } %>
@@ -36,7 +36,7 @@
         <label for="key">Secret Key</label>
         <input type="text" class="form-control" name="key">
       </div>
-      <br><button type="submit" class="btn btn-secondary verify"><span class="fa fa-check"></span> Verify</button><br>
+      <br><button type="submit" class="btn btn-info verify"><span class="fa fa-check"></span> Verify</button><br>
       <b>Don't have a secret key? Get one!</b>
       <ol>
         <li>Log onto the <kbd>mcdiamondfire.com</kbd> minecraft server.</li>
