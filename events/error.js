@@ -4,6 +4,6 @@ module.exports = class {
     }
 
     run(error) {
-        console.log(`Websocket error:\n${error}`);
+        console.log(`A websocket error occured. VerifyBot may require a restart.\n${error}`);
     }
 };
