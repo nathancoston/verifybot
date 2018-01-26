@@ -9,8 +9,6 @@ module.exports = class {
         // Ignore if sender is bot, user is on cooldown, or if guild is invalid
         if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id || this.client.commandCooldowns.has(message.author.id)) return;
 
-        this.client.currentData.set("messages", (this.client.currentData.get("messages") || 0) + 1);
-
         // Calculate permissions
         const userPerms = await this.client.permLevel(message.author.id);
 
@@ -26,6 +24,10 @@ module.exports = class {
         } else if (this.client.aliases.has(command)) cmd = this.client.commands.get(this.client.aliases.get(command));
 
         if (!cmd) return;
+
+        // Message flags
+        message.flags = []; //eslint-disable-line no-param-reassign
+        while (args[0] && args[0][0] === "-") message.flags.push(args.shift().slice(1));
 
         // Delete message containing command
         message.delete();

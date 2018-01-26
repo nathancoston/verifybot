@@ -22,8 +22,7 @@ class CustomClient extends Client {
         this.commandCooldowns = new Set();
         this.cooldowns = new Collection();
         this.tokens = new Collection();
-        this.data = new Collection();
-        this.currentData = new Collection(); 
+        this.mutes = new Collection();
 
         this.config = {};
 
