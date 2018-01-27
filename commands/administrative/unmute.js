@@ -1,4 +1,3 @@
-const ms = require("pretty-ms");
 const Base = require("../../base/Command.js");
 
 module.exports = class Mute extends Base {
