@@ -7,7 +7,7 @@ module.exports = class Mute extends Base {
             description: "Unmutes the selected user.",
             usage: "<user> [-noreports]",
             category: "administrative",
-            permLevel: 3
+            permLevel: 4
         });
     }
 
