@@ -13,12 +13,17 @@ module.exports = class Mute extends Base {
     }
 
     async run(message, args) {
+        // Fetch the mentioned user
         const user = await super.verifyUser(args.shift());
+        // Get all time markers
         let time = this.matchAll(/(\d+)([d,h,m,s])/ig, args.join(" "));
 
+        // If user is invalid, throw error
         if (!user) return super.error("Invalid user.");
+        // Fetch the user as a guild member
         const member = message.guild.member(user);
 
+        // Calculate time in ms
         time = time.reduce((total, current) => {
             const key = {
                 d: 86400000,
@@ -26,15 +31,19 @@ module.exports = class Mute extends Base {
                 m: 60000,
                 s: 1000
             };
-
+            
             return total + key[current[2]] * current[1]; //eslint-disable-line no-mixed-operators
         }, 0);
 
+        // If duration is invalid, throw an error
         if (!time && isNaN(time)) return super.error("Invalid duration.");
 
-        const role = message.flags.includes("noreports") ? message.guild.roles.find("name", "no-reports") : message.guild.roles.find("name", "Muted");
+        // Fetch the role
+        const role = message.guild.roles.find("name", message.flags.includes("noreports") ? "no-reports" : "Muted");
+        // Give the target the role
         member.addRole(role);
 
+        // Tell the admin that the user has been muted
         super.respond(`${user.tag} has been muted${time ? ` for ${ms(time, { verbose: true })}` : ""}.`);
 
         if (time) {
