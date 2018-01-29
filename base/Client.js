@@ -1,5 +1,6 @@
 const { Collection, Client } = require("discord.js");
 const { readdir } = require("fs");
+const { get } = require("snekfetch");
 const mysql = require("mysql");
 const levels = require("../levels.json");
 
@@ -29,23 +30,6 @@ class CustomClient extends Client {
         setInterval(() => {
             this.loop();
         }, 900000);
-
-        //Data collection
-        /*const now = new Date();
-        const delay = 60 * 60 * 1000;
-        const start = delay - (now.getMinutes() * 60 + now.getSeconds() * 1000 + now.getMilliseconds()); //eslint-disable-line no-mixed-operators
-
-        setTimeout(() => {
-            if (this.currentData.getHours() === 0) this.data.deleteAll();
-                const time = new Date();
-                time.setHours(time.getHours() - 1);
-
-                const newData = { messages: this.currentData.get("messages") || 0, time };
-                this.data.set(time, newData);
-                this.currentData.delete("messages");
-            call();
-            setInterval(call, delay);
-        }, start);*/
     }
 
     /**
@@ -77,6 +61,8 @@ class CustomClient extends Client {
             if (err) throw err;
             console.log(`Connected to sql database.`);
         });
+
+        return this;
     }
 
     /**
@@ -138,16 +124,29 @@ class CustomClient extends Client {
     /**
      * The code ran every 15 minutes.
      */
-    loop() {
-        this.connection.query("SELECT discord_id, player_name FROM linked_accounts", (err, fields) => {
-            if (err) throw err;
+    async loop() {
+        // Fetch all verified users
+        const verified = this.guilds.get(this.config.guild).members.filter(m => m.roles.exists("name", "Verified"));
 
-            fields.forEach(player => {
-                this.guilds.get(this.config.guild).members.fetch(player.discord_id).then(member => {
-                    if (member.displayName !== player.player_name) member.setNickname(player.player_name).then(() => member.send("Your nickname has been synced with your minecraft username.").catch(() => null)).catch(() => null);
-                }).catch(() => this.connection.query(`DELETE FROM linked_accounts WHERE discord_id = '${player.discord_id}';`));
-            });
+        // Run through all of them
+        verified.forEach(async member => {
+            // Fetch their data
+            const data = await this.query(`SELECT player_name FROM linked_accounts WHERE discord_id = '${member.id}';`);
+            // If no data found...
+            if (data.length === 0) {
+                // Unverify them
+                member.removeRole(member.roles.find("name", "Verified"));
+                // Send them a message
+                member.send(`You've been unverified as you are not registered in the database. This is most likely because you were verified by an admin, meaning VerifyBot has no idea who you are.`).catch(() => null);
+            }
         });
+
+        // Fetch server stats
+        const body = await get("https://api.mcsrvstat.us/1/mcdiamondfire.com");
+        // If no body text found, return
+        if (!body.text) return;
+        // Fetch online players
+        this.user.setActivity(`with ${JSON.parse(body.text).players.online} players`);
     }
 
     /**
