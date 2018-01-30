@@ -22,7 +22,7 @@ module.exports = class Mute extends Base {
         // Fetch the role
         const role = message.guild.roles.find("name", message.flags.includes("noreports") ? "no-reports" : "Muted");
         // Remove the muted role
-        member.removeRole(role);
+        member.roles.remove(role);
 
         // Tell the admin the user has been unmuted
         super.respond(`${user.tag} has been unmuted.`);

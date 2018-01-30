@@ -8,7 +8,7 @@ module.exports = class {
 
     run(oldMessage, newMessage) {
         // If message was not sent the guild, return
-        if (newMessage.guild.id !== config.guild) return;
+        if (!newMessage.guild || newMessage.guild.id !== config.guild) return;
         // Fetch logs channel
         const logs = this.client.channels.find("name", config.logs.messageUpdates);
         // If no logs channel found, return false

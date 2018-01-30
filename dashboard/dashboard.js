@@ -127,7 +127,7 @@ module.exports = (client) => {
                 // Attempt to set nickname
                 member.setNickname(accInfo.data.player_name).catch(() => null);
                 // Attempt to add Verified role
-                member.addRole(member.guild.roles.find("name", "Verified")).catch(() => null);
+                member.roles.add(member.guild.roles.find("name", "Verified")).catch(() => null);
                 // Remove user's token info from collection
                 client.tokens.delete(req.user.id);
 
@@ -347,9 +347,9 @@ module.exports = (client) => {
                 if (!role) return res.redirect("/staff?error=Unknown role.");
                 
                 // If action is add, give them the role
-                if (req.body.roles_action === "add") target.addRole(req.body.role);
+                if (req.body.roles_action === "add") target.roles.add(req.body.role);
                 // If action is remove, remove the role
-                if (req.body.roles_action === "remove") target.removeRole(req.body.role);
+                if (req.body.roles_action === "remove") target.roles.remove(req.body.role);
 
                 // Notify the user that the action was successful
                 return res.redirect(`/staff?message=Successfully ${req.body.roles_action === "add" ? "added" : "removed"} the role from ${target.displayName}.`);

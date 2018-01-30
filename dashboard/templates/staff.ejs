@@ -131,7 +131,7 @@
                                     <div class="form-group">
                                         <label>Role</label>
                                         <select class="form-control" name="role">
-                                            <%- member.guild.roles.sort((a, b) => a.comparePositionTo(b)).filter(r => r.id !== member.guild.id && member.guild.me.highestRole.comparePositionTo(r) > 0).map(r => `<option value="${r.id}">${r.name}</option>`).join("\n"); %>
+                                            <%- member.guild.roles.map(r => `<option value="${r.id}">${r.name}</option>`).join("\n"); %>
                                         </select>
                                     </div>
                                     <div class="form-group">

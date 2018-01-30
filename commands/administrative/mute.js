@@ -41,14 +41,14 @@ module.exports = class Mute extends Base {
         // Fetch the role
         const role = message.guild.roles.find("name", message.flags.includes("noreports") ? "no-reports" : "Muted");
         // Give the target the role
-        member.addRole(role);
+        member.roles.add(role);
 
         // Tell the admin that the user has been muted
         super.respond(`${user.tag} has been muted${time ? ` for ${ms(time, { verbose: true })}` : ""}.`);
 
         if (time) {
             this.client.mutes.set(user.id, setTimeout(() => {
-                member.removeRole(role);        
+                member.roles.remove(role);        
             }, time));
         }
     }

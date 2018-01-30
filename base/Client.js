@@ -135,7 +135,7 @@ class CustomClient extends Client {
             // If no data found...
             if (data.length === 0) {
                 // Unverify them
-                member.removeRole(member.roles.find("name", "Verified"));
+                member.roles.remove(member.roles.find("name", "Verified"));
                 // Send them a message
                 member.send(`You've been unverified as you are not registered in the database. This is most likely because you were verified by an admin, meaning VerifyBot has no idea who you are.`).catch(() => null);
             }
