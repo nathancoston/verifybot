@@ -127,17 +127,21 @@ class CustomClient extends Client {
     async loop() {
         // Fetch all verified users
         const verified = this.guilds.get(this.config.guild).members.filter(m => m.roles.exists("name", "Verified"));
+        // Fetch all linked accounts
+        const linked = await this.connection.query(`SELECT (player_name) FROM linked_accounts;`);
 
         // Run through all of them
         verified.forEach(async member => {
             // Fetch their data
-            const data = await this.query(`SELECT player_name FROM linked_accounts WHERE discord_id = '${member.id}';`);
+            const data = linked.filter(user => user.discord_id === member.id)[0];
             // If no data found...
-            if (data.length === 0) {
+            if (!data) {
                 // Unverify them
-                member.roles.remove(member.roles.find("name", "Verified"));
+                member.roles.remove(member.roles.find("name", "Verified")).catch(() => null);
                 // Send them a message
                 member.send(`You've been unverified as you are not registered in the database. This is most likely because you were verified by an admin, meaning VerifyBot has no idea who you are.`).catch(() => null);
+                // Clear their nickname
+                member.setNickname("").catch(() => null);
             }
         });
 
