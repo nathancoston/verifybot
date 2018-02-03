@@ -134,7 +134,6 @@ class CustomClient extends Client {
             // Fetch their data
             const data = linked.find(user => user.discord_id === member.id);
             // If no data found...
-            console.log(data);
             if (!data) {
                 // Unverify them
                 member.roles.remove(member.roles.find("name", "Verified")).catch(() => null);
