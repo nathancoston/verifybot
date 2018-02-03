@@ -39,7 +39,7 @@ module.exports = class Mute extends Base {
         if (!time && isNaN(time)) return super.error("Invalid duration.");
 
         // Fetch the role
-        const role = message.guild.roles.find("name", message.flags.includes("noreports") ? "no-reports" : "Muted");
+        const role = message.guild.roles.find("name", message.flags.find(f => f.flag === "noreports") ? "no-reports" : "Muted");
         // Give the target the role
         member.roles.add(role);
 

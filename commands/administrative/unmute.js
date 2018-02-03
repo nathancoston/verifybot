@@ -20,7 +20,7 @@ module.exports = class Mute extends Base {
         // Fetch the guild member
         const member = message.guild.member(user);
         // Fetch the role
-        const role = message.guild.roles.find("name", message.flags.includes("noreports") ? "no-reports" : "Muted");
+        const role = message.guild.roles.find("name", message.flags.find(f => f.flag === "noreports") ? "no-reports" : "Muted");
         // Remove the muted role
         member.roles.remove(role);
 

@@ -19,11 +19,15 @@ module.exports = class {
         // Run the 15 minute loop to update users' nicknames
         this.client.loop();
 
-        // Fetch reboot info
+        try {
+            // Fetch reboot info
         const reboot = JSON.parse(readFileSync("restart.json"));
         // Fetch reboot message
         const message = await this.client.channels.get(reboot.channel).messages.fetch(reboot.id);
         // Update reboot timestamp
         message.edit(`✅ | Successfully rebooted in ${Date.now() - reboot.time}ms.`);
+        } catch (e) {
+            return null;
+        }
     }
 };
