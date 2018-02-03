@@ -23,8 +23,11 @@ module.exports = class {
         if (cmd.cooldown.has(message.author.id)) return;
 
         // Message flags
-        message.flags = []; //eslint-disable-line no-param-reassign
-        while (args[0] && args[0][0] === "-") message.flags.push(args.shift().slice(1));
+        message.flags = args.filter(arg => arg.indexOf("-") === 0).map(arg => { //eslint-disable-line no-param-reassign
+            const index = args.indexOf(arg);
+            args.splice(index, 1);
+            return { flag: arg.slice(1), arg: args[index] };
+        });
 
         // Delete message containing command
         message.delete();
