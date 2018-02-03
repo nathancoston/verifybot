@@ -6,8 +6,8 @@ module.exports = class {
     }
 
     async run(message) {
-        // Ignore if sender is bot, user is on cooldown, or if guild is invalid
-        if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id || this.client.commandCooldowns.has(message.author.id)) return;
+        // Ignore if sender is bot, or if guild is invalid
+        if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id) return;
 
         // Calculate permissions
         const userPerms = await this.client.permLevel(message.author.id);
@@ -15,15 +15,12 @@ module.exports = class {
         // Fetch command name and arguments
         const args = message.content.split(/\s+/g);
         const command = args.shift().slice(this.client.config.prefix.length);
-
-        let cmd;
-
-        // Find command
-        if (this.client.commands.has(command)) {
-            cmd = this.client.commands.get(command);
-        } else if (this.client.aliases.has(command)) cmd = this.client.commands.get(this.client.aliases.get(command));
+        const cmd = this.client.commands.get(command) || this.client.commands.get(this.client.aliases.get(command));
 
         if (!cmd) return;
+
+        // Check if user is on cooldown
+        if (cmd.cooldown.has(message.author.id)) return;
 
         // Message flags
         message.flags = []; //eslint-disable-line no-param-reassign
@@ -41,12 +38,6 @@ module.exports = class {
         cmd.run(message, args, userPerms);
 
         // Put the user on cooldown
-        if (cmd.conf.cooldown > 0) {
-            this.client.commandCooldowns.add(message.author.id);
-
-            setTimeout(() => {
-                this.client.commandCooldowns.delete(message.author.id);
-            }, cmd.conf.cooldown);
-        }
+        if (userPerms.level < 4) cmd.startCooldown(message.author.id);
     }
 };

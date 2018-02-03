@@ -32,6 +32,7 @@ class Command {
         };
 
         this.message = null;
+        this.cooldown = new Set();
     }
 
     /**
@@ -51,6 +52,26 @@ class Command {
             // Fetch the user from the ID
             this.client.users.fetch(id).then(resolve).catch(() => resolve(null));
         });
+    }
+
+    /**
+     * Puts a user on cooldown
+     * @param {String} userID The ID of the user to put on cooldown
+     * @returns {undefined}
+     */
+    startCooldown(userID) {
+        this.cooldown.add(userID);
+
+        setTimeout(this.stopCooldown, this.conf.cooldown);
+    }
+
+    /**
+     * Removes a user from cooldown
+     * @param {String} userID The ID of the user to take off cooldown 
+     * @returns {undefined}
+     */
+    stopCooldown(userID) {
+        this.cooldown.delete(userID);
     }
 
     /**

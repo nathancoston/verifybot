@@ -20,7 +20,6 @@ class CustomClient extends Client {
         this.events = new Collection();
 
         this.attempts = new Collection();
-        this.commandCooldowns = new Set();
         this.cooldowns = new Collection();
         this.tokens = new Collection();
         this.mutes = new Collection();
@@ -128,13 +127,14 @@ class CustomClient extends Client {
         // Fetch all verified users
         const verified = this.guilds.get(this.config.guild).members.filter(m => m.roles.exists("name", "Verified"));
         // Fetch all linked accounts
-        const linked = await this.connection.query(`SELECT (player_name) FROM linked_accounts;`);
+        const linked = await this.query(`SELECT player_name,discord_id FROM linked_accounts;`);
 
         // Run through all of them
         verified.forEach(async member => {
             // Fetch their data
-            const data = linked.filter(user => user.discord_id === member.id)[0];
+            const data = linked.find(user => user.discord_id === member.id);
             // If no data found...
+            console.log(data);
             if (!data) {
                 // Unverify them
                 member.roles.remove(member.roles.find("name", "Verified")).catch(() => null);
