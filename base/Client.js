@@ -3,7 +3,6 @@ const { readdir } = require("fs");
 const { get } = require("snekfetch");
 const mysql = require("mysql");
 const levels = require("../levels.json");
-const schedule = require("node-schedule");
 
 /**
  * Represents a Discord client.
@@ -28,8 +27,6 @@ class CustomClient extends Client {
         this.config = {};
 
         setInterval(this.loop, 900000);
-
-        this.schedule = schedule.scheduleJob("7 * * * *", async () => this.postWeeklyData);
     }
 
     /**
