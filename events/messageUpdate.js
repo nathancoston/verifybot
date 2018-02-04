@@ -21,10 +21,10 @@ module.exports = class {
         if (!oldMessage.pinned && newMessage.pinned) action = { action: "Message Pinned", color: [100, 255, 100] };
         if (oldMessage.pinned && !newMessage.pinned) action = { action: "Message Unpinned", color: [255, 155, 100] };
 
-        if (newMessage.author.bot && action.action === "Message Edited") return;
-
         // If no action found, ignore it
         if (!action) return;
+
+        if (newMessage.author.bot && action.action === "Message Edited") return;
 
         // Create an embed
         const embed = new MessageEmbed()
