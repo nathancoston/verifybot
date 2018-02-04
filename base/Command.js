@@ -62,16 +62,7 @@ class Command {
     startCooldown(userID) {
         this.cooldown.add(userID);
 
-        setTimeout(this.stopCooldown, this.conf.cooldown);
-    }
-
-    /**
-     * Removes a user from cooldown
-     * @param {String} userID The ID of the user to take off cooldown 
-     * @returns {undefined}
-     */
-    stopCooldown(userID) {
-        this.cooldown.delete(userID);
+        setTimeout(() => this.cooldown.delete(userID), this.conf.cooldown);
     }
 
     /**

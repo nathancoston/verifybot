@@ -3,6 +3,7 @@ const { readdir } = require("fs");
 const { get } = require("snekfetch");
 const mysql = require("mysql");
 const levels = require("../levels.json");
+const schedule = require("node-schedule");
 
 /**
  * Represents a Discord client.
@@ -26,9 +27,9 @@ class CustomClient extends Client {
 
         this.config = {};
 
-        setInterval(() => {
-            this.loop();
-        }, 900000);
+        setInterval(this.loop, 900000);
+
+        this.schedule = schedule.scheduleJob("7 * * * *", async () => this.postWeeklyData);
     }
 
     /**
@@ -150,6 +151,21 @@ class CustomClient extends Client {
         if (!body.text) return;
         // Fetch online players
         this.user.setActivity(`with ${JSON.parse(body.text).players.online} players`);
+    }
+
+    async fetchWeeklyData() {
+        const fetch = require("../methods/restricted/fetchWeeklyData"); //eslint-disable-line global-require
+
+        const data = await fetch(this);
+        const announcements = this.guilds.get(this.config.guild).channels.find("name", "announcements");
+        const message = [
+            "Hello, @everyone! It's the end of the week, so we'll be going through the top 5 creators, plots, and support of the month!",
+            `\`\`\`asciidoc\n== Top Creators\nBeta\`\`\``,
+            `\`\`\`asciidoc\n== Top Plots\nBeta\`\`\``,
+            `\`\`\`asciidoc\n== Top Support\n${data.topSupport.map((info, index) => `${index + 1} :: ${info.name} with ${info.sessions} sessions`).join("\n")}\`\`\``
+        ];
+
+        announcements.send(message.join("\n"));
     }
 
     /**
