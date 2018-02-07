@@ -14,6 +14,9 @@ module.exports = class {
         // Activate dashboard
         require("../dashboard/dashboard")(this.client); //eslint-disable-line global-require
 
+        // Set client properties
+        this.client.guild = this.client.guilds.get(this.client.config.guild);
+
         // Set the bot's game
         this.client.user.setActivity("www.mcdiamondfire.com");
         // Run the 15 minute loop to update users' nicknames

@@ -71,6 +71,11 @@ const questions = [
         type: "input",
         name: "logs.verification",
         message: "Verification Log (Channel Name): "
+    },
+    {
+        type: "input",
+        name: "logs.modlog",
+        message: "Moderation Log (Channel Name):"
     }
 ];
 

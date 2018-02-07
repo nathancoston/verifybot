@@ -123,7 +123,7 @@ class CustomClient extends Client {
      */
     async loop() {
         // Fetch all verified users
-        const verified = this.guilds.get(this.config.guild).members.filter(m => m.roles.exists("name", "Verified"));
+        const verified = this.guild.members.filter(m => m.roles.exists("name", "Verified"));
         // Fetch all linked accounts
         const linked = await this.query(`SELECT player_name,discord_id FROM linked_accounts;`);
 
@@ -154,7 +154,7 @@ class CustomClient extends Client {
         const fetch = require("../methods/restricted/fetchWeeklyData"); //eslint-disable-line global-require
 
         const data = await fetch(this);
-        const announcements = this.guilds.get(this.config.guild).channels.find("name", "announcements");
+        const announcements = this.guild.channels.find("name", "announcements");
         const message = [
             "Hello, @everyone! It's the end of the week, so we'll be going through the top 5 creators, plots, and support of the month!",
             `\`\`\`asciidoc\n== Top Creators\nBeta\`\`\``,

@@ -5,15 +5,15 @@ const { perms } = require("../levels.json");
  */
 class Command {
     /**
-     * @param {Client} client The client passed to the command.
-     * @param {Object} options The properties of the command.
-     * @param {String} options.name The name of the command.
-     * @param {String} options.description The description of the command.
-     * @param {String} options.usage The command usage.
-     * @param {String} options.category The category for the cmomand.
-     * @param {Number} options.permLevel The permission level required for the command.
-     * @param {Number} options.cooldown The cooldown time on a command.
-     * @param {Array} options.aliases The command aliases. 
+     * @param {Client} client The client passed to the command
+     * @param {Object} options The properties of the command
+     * @param {String} options.name The name of the command
+     * @param {String} options.description The description of the command
+     * @param {String} options.usage The command usage
+     * @param {String} options.category The category for the cmomand
+     * @param {Number} options.permLevel The permission level required for the command
+     * @param {Number} options.cooldown The cooldown time on a command
+     * @param {Array} options.aliases The command aliases
      */
     constructor(client, options) {            
         this.client = client;
