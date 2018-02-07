@@ -26,7 +26,30 @@ class CustomClient extends Client {
 
         this.config = {};
 
-        setInterval(this.loop, 900000);
+        setInterval(async () => {
+            // Fetch all verified users
+            const verified = this.guild.members.filter(member => member.roles.exists("name", "Verified"));
+            // Fetch account data
+            const data = await this.query("SELECT player_name,discord_id FROM linked_accounts;");
+            
+            // Run through all verified users
+            verified.forEach(user => {
+                // Fetch their profile data
+                const profile = data.find(entry => entry.discord_id === user.id);
+                // If no profile exists, unverify them
+                if (!profile) return user.removeRole(user.roles.find("name", "Verified")).catch(() => null).then(() => user.setNickname("").then(() => user.send("You have been unverified - this is most likely because you weren't verified by the bot, meaning you aren't registered in the database.")));
+
+                // If nickname is out of sync, set it to their player name
+                if (profile.player_name !== user.displayName) return user.setNickname(profile.player_name);
+            });
+            
+            // Fetch server stats
+            const body = await get("https://api.mcsrvstat.us/1/mcdiamondfire.com");
+            // If no body text found, return
+            if (!body.text) return;
+            // Fetch online players
+            this.user.setActivity(`with ${JSON.parse(body.text).players.online} players`);
+        }, 900000);
     }
 
     /**
@@ -116,38 +139,6 @@ class CustomClient extends Client {
         super.login(token);
 
         return this;
-    }
-
-    /**
-     * The code ran every 15 minutes.
-     */
-    async loop() {
-        // Fetch all verified users
-        const verified = this.guild.members.filter(m => m.roles.exists("name", "Verified"));
-        // Fetch all linked accounts
-        const linked = await this.query(`SELECT player_name,discord_id FROM linked_accounts;`);
-
-        // Run through all of them
-        verified.forEach(async member => {
-            // Fetch their data
-            const data = linked.find(user => user.discord_id === member.id);
-            // If no data found...
-            if (!data) {
-                // Unverify them
-                member.roles.remove(member.roles.find("name", "Verified")).catch(() => null);
-                // Send them a message
-                member.send(`You've been unverified as you are not registered in the database. This is most likely because you were verified by an admin, meaning VerifyBot has no idea who you are.`).catch(() => null);
-                // Clear their nickname
-                member.setNickname("").catch(() => null);
-            }
-        });
-
-        // Fetch server stats
-        const body = await get("https://api.mcsrvstat.us/1/mcdiamondfire.com");
-        // If no body text found, return
-        if (!body.text) return;
-        // Fetch online players
-        this.user.setActivity(`with ${JSON.parse(body.text).players.online} players`);
     }
 
     async fetchWeeklyData() {
