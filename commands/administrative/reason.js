@@ -35,6 +35,9 @@ module.exports = class Reason extends Base {
             embed.description = data.join("\n");
             // Edit the message
             log.edit(embed);
+
+            // Notify the user that the reason has been changed
+            super.respond(`Reason for case ${embed.footer.text.split(" ")[1]} has been changed to \`${args.slice(1).join(" ")}\``);
         } catch (e) {
             super.error("An unknown error occured whilst attempting to perform this action.");
         }
