@@ -1,30 +1,32 @@
-const Base = require("../../base/Command.js");
+const Base = require("../../base/ModerationCommand.js");
 
 module.exports = class Mute extends Base {
     constructor(client) {
         super(client, {
             name: "unmute",
-            description: "Unmutes the selected user.",
-            usage: "<user> [-noreports]",
+            description: "Unmutes the mentioned user.",
+            usage: "<user> <reason>",
             category: "administrative",
             permLevel: 4
+        }, {
+            actionName: "unmute",
+            color: 0x1A9CBC
         });
     }
 
-    async run(message, args) {
-        // Fetch mentioned user
-        const user = await super.verifyUser(args.shift());
-        // If user is invalid, throw an error
-        if (!user) return super.error("Invalid user.");
+    async run(message) {
+        try {
+            await super.setData(message);
+            const valid = super.check();
+            if (!valid) return;
 
-        // Fetch the guild member
-        const member = message.guild.member(user);
-        // Fetch the role
-        const role = message.guild.roles.find("name", message.flags.find(f => f.flag === "noreports") ? "no-reports" : "Muted");
-        // Remove the muted role
-        member.roles.remove(role);
+            await super.notify();
+            await this.target.roles.remove(message.guild.roles.find("name", "Muted"));
 
-        // Tell the admin the user has been unmuted
-        super.respond(`${user.tag} has been unmuted.`);
+            super.send();
+        } catch (e) {
+            console.log(e);
+            super.error("An unknown error occured whilst attempting to perform this action.");
+        }
     }
 };

@@ -19,10 +19,11 @@ module.exports = class Ban extends Base {
             const valid = super.check();
             if (!valid) return;
 
+            await super.notify();
+
             super.send();
         } catch (e) {
             super.error("An unknown error occured whilst attempting to perform this action.");
-            console.log(e);
         }
     }
 };

@@ -18,7 +18,9 @@ module.exports = class Ban extends Base {
             await super.setData(message);
             const valid = super.check();
             if (!valid) return;
-            await this.target.kick({ reason: this.reason ? `[${this.executor.tag}] ${this.reason}` : `Banned by ${this.executor.tag}` });
+
+            await super.notify();
+            await this.target.kick({ reason: this.reason ? `[${this.executor.user.tag}] ${this.reason}` : `Banned by ${this.executor.user.tag}` });
 
             super.send();
         } catch (e) {

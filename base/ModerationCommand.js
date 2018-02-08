@@ -1,4 +1,4 @@
-const { MessageEmbed, GuildMember, User } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const Command = require("./Command");
 
 /** 
@@ -23,13 +23,14 @@ class ModerationCommand extends Command {
         this.reason = null;
     }
 
-    async setData(message) {
+    setData(message) {
         const args = message.content.split(" ").slice(1);
-        const matches = this.matchAll(args.join(" "), /(?:<@!?)?(\d{15,21})>(\s(.+)|)/g);
 
         this.executor = message.member;
-        this.target = message.guild.member(await super.verifyUser(matches[0]));
-        this.reason = matches[2] || null;
+        this.target = message.guild.member(message.mentions.members.first() || message.guild.members.get(args[0]));
+        this.reason = args.join(" ").replace(new RegExp(`( |)(${this.target.toString()}|${this.target.id})( |)`), "");
+        
+        return new Promise(r => r());
     }
 
     /** 
@@ -59,6 +60,12 @@ class ModerationCommand extends Command {
         if (check1 && !check2) super.error("I can't execute this operation on that user.");
 
         return check1 && check2;
+    }
+
+    notify() {
+        return new Promise(resolve => {
+            this.target.send(`You have 1 new ${this.actionName}${this.reason ? ` for the reason \`${this.reason}\`` : ""}.`).then(resolve).catch(resolve);
+        });
     }
 
     async send() {
