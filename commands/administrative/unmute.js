@@ -10,7 +10,7 @@ module.exports = class Mute extends Base {
             permLevel: 4
         }, {
             actionName: "unmute",
-            color: 0x1A9CBC
+            color: 0x11BBFFF
         });
     }
 
