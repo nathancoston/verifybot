@@ -17,11 +17,6 @@ module.exports = class {
         // Set client properties
         this.client.guild = this.client.guilds.get(this.client.config.guild);
 
-        // Set the bot's game
-        this.client.user.setActivity("www.mcdiamondfire.com");
-        // Run the 15 minute loop to update users' nicknames
-        this.client.loop();
-
         try {
             // Fetch reboot info
         const reboot = JSON.parse(readFileSync("restart.json"));
