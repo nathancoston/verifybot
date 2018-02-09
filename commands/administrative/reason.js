@@ -21,7 +21,7 @@ module.exports = class Reason extends Base {
             // Fetch 100 messages
             const messages = await channel.messages.fetch({ limit: 100 });
             // Fetch the case
-            const log = messages.find(c => c.author.bot && c.embeds[0].footer.text.split(" ")[1] === args[0]);
+            const log = args[0] === "latest" ? messages.first() : messages.find(c => c.author.bot && c.embeds[0].footer.text.split(" ")[1] === args[0]);
             // If no case found, throw an error
             if (!log) return super.error("Case not found. Please note that I am unable to edit cases that happened over 100 logs ago.");
            

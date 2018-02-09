@@ -74,12 +74,12 @@ class ModerationCommand extends Command {
         if (!this.target) return super.error("No target found.");
         if (!this.executor) throw new Error(`No executor specified for the moderation command ${this.actionName}. Set the executor with super.setExecutor(message.author);`);
 
-        const previous = await channel.messages.fetch({ limit: 1 });
+        const previous = (await channel.messages.fetch({ limit: 1 })).filter(c => c.author.id === this.client.user.id);
         const caseNumber = (previous.size ? parseInt(previous.first().embeds[0].footer.text.split(" ")[1]) + 1 : 1) || 1;
 
         const embed = new MessageEmbed()
             .setColor(this.color)
-            .setAuthor(`${this.executor.user.tag} (${this.executor.id})`, this.executor.user.displayAvatarURL({ size: 128, format: "png" }))
+            .setAuthor(`${this.executor.displayName} (${this.executor.user.tag})`, this.executor.user.displayAvatarURL({ size: 128, format: "png" }))
             .setDescription(`**User:** ${this.target.displayName} (${this.target.user.tag})\n**Action:** ${this.actionName}\n**Reason:** ${this.reason || `Awaiting moderator's input. Type \`!reason ${caseNumber} <reason>\` to set reason.`}`)
             .setFooter(`Case ${caseNumber}`)
             .setTimestamp();

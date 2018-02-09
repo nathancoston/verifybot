@@ -1,16 +1,15 @@
 const Base = require("../../base/ModerationCommand.js");
 
-module.exports = class Mute extends Base {
+module.exports = class Ban extends Base {
     constructor(client) {
         super(client, {
-            name: "unmute",
-            description: "Unmutes the mentioned user.",
+            name: "softban",
+            description: "Kicks the mentioned user and purges their messages.",
             usage: "<user> <reason>",
-            category: "administrative",
             permLevel: 4
         }, {
-            actionName: "unmute",
-            color: 0x00AAFF
+            actionName: "softban",
+            color: 0xFF5500
         });
     }
 
@@ -21,11 +20,11 @@ module.exports = class Mute extends Base {
             if (!valid) return;
 
             await super.notify();
-            await this.target.roles.remove(message.guild.roles.find("name", "Muted"));
+            await this.target.ban({ days: 7, reason: this.reason ? `[${this.executor.user.tag} (softban)] ${this.reason}` : `Softbanned by ${this.executor.user.tag}` });
+            await message.guild.members.unban(this.target.id, { reason: "softban unban" });
 
             super.send();
         } catch (e) {
-            console.log(e);
             super.error("An unknown error occured whilst attempting to perform this action.");
         }
     }

@@ -6,8 +6,8 @@ module.exports = class {
     }
 
     async run(message) {
-        // Ignore if sender is bot, or if guild is invalid
-        if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id) return;
+        // Ignore if sender is bot, there is no prefix, or if guild is invalid
+        if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id || message.content.indexOf(this.client.config.prefix) === -1) return;
 
         // Calculate permissions
         const userPerms = await this.client.permLevel(message.author.id);
