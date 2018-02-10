@@ -120,7 +120,7 @@ module.exports = (client) => {
                 // Fetch account info from token
                 const accInfo = client.tokens.get(req.user.id);
                 // Fetch member from guild
-                const member = client.guilds.get(client.config.guild).members.get(req.user.id);
+                const member = client.guild.members.get(req.user.id);
                 // Throw 404 if member is invalid
                 if (!member) return res.status(404);
 
@@ -173,7 +173,7 @@ module.exports = (client) => {
         if (perms.level < 2) return res.status(404);
 
         // Fetch guild member
-        const member = await client.guilds.get(client.config.guild).members.fetch(req.user.id);
+        const member = await client.guild.members.fetch(req.user.id);
 
         // Fetch account, session, and queue data
         const { account, sessions, queue } = await (require("../methods/restricted/fetchSupportData"))(client, req.user.id); //eslint-disable-line global-require 
@@ -213,7 +213,7 @@ module.exports = (client) => {
         // Fetch user perms
         const perms = await client.permLevel(req.user.id);
         // Fetch guild member
-        const member = await client.guilds.get(client.config.guild).members.fetch(req.user.id);
+        const member = await client.guild.members.fetch(req.user.id);
 
         // If no member is present, throw an error
         if (!member) return res.redirect("?error=You are not on the DiamondFire discord server!");

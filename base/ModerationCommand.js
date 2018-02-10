@@ -23,13 +23,23 @@ class ModerationCommand extends Command {
         this.reason = null;
     }
 
+    /**
+     * Fetches data such as the target, reason, and executor
+     * @param {Message} message The message used to fetch data
+     * @returns {Promise} An empty promise
+     */
     setData(message) {
+        // Fetch message args
         const args = message.content.split(" ").slice(1);
 
+        // Get the message member
         this.executor = message.member;
-        this.target = message.guild.member(message.mentions.members.first() || message.guild.members.get(args[0]));
+        // Get the target member
+        this.target = message.guild.member(super.verifyUser(args[0]));
+        // Find the reason
         this.reason = args.join(" ").replace(new RegExp(`( |)(${this.target.toString()}|${this.target.id})( |)`), "");
-        
+
+        // Return an empty promise
         return new Promise(r => r());
     }
 
@@ -53,21 +63,38 @@ class ModerationCommand extends Command {
         return res[0] ? res[0].slice(1) : null;
     }
 
+    /** 
+     * Verifies that the command can run
+     * @returns {Boolean} Wether or not the check was successful
+    */
     check() {
+        // Verify that the user's roles are high enough
         const check1 = this.executor.roles.highest.comparePositionTo(this.target.roles.highest) > 0;
+        // If not, throw an error
         if (!check1) super.error("You can't execute this operation on this user.");
+        // Verify that the bot's roles are high enough
         const check2 = this.executor.guild.me.roles.highest.comparePositionTo(this.target.roles.highest) > 0;
+        // If not, throw an error
         if (check1 && !check2) super.error("I can't execute this operation on that user.");
 
+        // Return true if check1 and check2 are true, and false if one or the other isn't
         return check1 && check2;
     }
 
+    /** 
+     * Sends the target a message telling them that a moderation action was executed on them
+     * @returns {Promise<Message>} The message sent to the user (null if the send failed)
+    */
     notify() {
         return new Promise(resolve => {
-            this.target.send(`You have 1 new ${this.actionName}${this.reason ? ` for the reason \`${this.reason}\`` : ""}.`).then(resolve).catch(resolve);
+            this.target.send(`You have 1 new ${this.actionName}${this.reason ? ` for the reason \`${this.reason}\`` : ""}.`).then(resolve).catch(() => resolve(null));
         });
     }
 
+    /** 
+     * Sends the moderation log
+     * @returns {Promise<Message>} The moderation log sent
+    */
     async send() {
         const channel = this.client.channels.find("name", this.client.config.logs.modlog);
         if (!channel) return super.error(`No moderation log found. Create a channel named \`${this.client.config.logs.modlog}\` to use moderation commands.`);
@@ -84,8 +111,9 @@ class ModerationCommand extends Command {
             .setFooter(`Case ${caseNumber}`)
             .setTimestamp();
 
-        channel.send({ embed });
+        const sent = channel.send({ embed });
         super.respond(`Operation executed on ${this.target.user.tag}.`);
+        return sent;
     }
 }
 

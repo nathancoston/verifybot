@@ -8,28 +8,37 @@ module.exports = class {
     }
 
     async run(message) {
-        // Ignore if sender is bot, or if guild is invalid
-        if (message.author.bot || !message.guild || this.client.config.guild !== message.guild.id) return;
+        // Ignore if sender is bot, or if message is sent in a direct message
+        if (message.author.bot || !message.guild || message.channel.type !== "text") return;
 
         // Calculate permissions
         const userPerms = await this.client.permLevel(message.author.id);
 
-        // Repitition filter
+        // Fetch recent messages
         let recent = recentMessages.get(message.author.id) || [];
+        // If user has recent messages
         if (recent[0]) {
+            // If the content doesn't match their message
             if (recent[0] !== message.content.toLowerCase()) {
+                // Remove their data
                 recentMessages.delete(message.author.id);
                 recent = [];
             } else {
+                // Add their content to their recent messages
                 recent.push(message.content.toLowerCase());
                 recentMessages.set(message.author.id, recent);
             }
+        // If no recent messages, set them to an array with the message content
         } else recentMessages.set(message.author.id, [message.content.toLowerCase()]);
-        
+
+        // If user has more than 4 identical messages...
         if (recent.length > 4) {
+            // Fetch 10 messages
             const messages = await message.channel.messages.fetch({ limit: 10 });
+            // Find all messages with the same content
             const filtered = messages.filter(m => m.content.toLowerCase() === recent[0]);
 
+            // Delete the filtered messages
             message.channel.bulkDelete(filtered, true).then(() => message.channel.send(`${message.author} | ❌ | Please stop spamming. Your messages have been removed.`)).catch(() => null).then(m => m.delete({ timeout: 10000 }));
         }
 
