@@ -299,7 +299,7 @@ module.exports = (client) => {
         // Fetch user perms
         const perms = await client.permLevel(req.user.id);
         // Fetch guild member
-        const member = await client.guilds.get(client.config.guild).members.fetch(req.user.id);
+        const member = await client.guild.members.fetch(req.user.id);
 
         // If member is not staff, throw 404 error
         if (perms.level < 2) return res.status(404);
