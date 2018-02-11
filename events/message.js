@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 const levels = require("../levels.json");
 
 const recentMessages = new Map();
@@ -36,11 +37,56 @@ module.exports = class {
             // Fetch 10 messages
             const messages = await message.channel.messages.fetch({ limit: 10 });
             // Find all messages with the same content
-            const filtered = messages.filter(m => m.content.toLowerCase() === recent[0]);
+            const filtered = messages.filter(async m => {
+                const permlevel = await this.client.permLevel(m.author.id);
+
+                return m.content.toLowerCase().includes(recent[0]) && permlevel < 2;
+            });
 
             // Delete the filtered messages
             message.channel.bulkDelete(filtered, true).then(() => message.channel.send(`${message.author} | ❌ | Please stop spamming. Your messages have been removed.`)).catch(() => null).then(m => m.delete({ timeout: 10000 }));
+
+            // Create a new modlog
+            const channel = message.guild.channels.find("name", this.client.config.logs.modlog);
+            if (!channel) return;
+
+            const previous = (await channel.messages.fetch({ limit: 1 })).filter(c => c.author.id === this.client.user.id);
+            const caseNumber = (previous.size ? parseInt(previous.first().embeds[0].footer.text.split(" ")[1]) + 1 : 1) || 1;
+
+            const embed = new MessageEmbed()
+                .setColor(0xBBFFFF)
+                .setAuthor(`VerifyBot AutoMod`, this.client.user.avatarURL({ size: 128 }))
+                .setDescription(`**User:** ${message.author.tag}\n**Action:** messages purged\n**Reason:** Spamming \`${recent[0]}\``)
+                .setFooter(`Case ${caseNumber}`)
+                .setTimestamp();
+
+            channel.send({ embed });
         }
+
+        // Get the amount of uppercase letters
+        const uppercase = message.content.split("").filter(c => ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"].includes(c)).length;
+
+        if (message.content.length > 5 && message.content.length - uppercase < 5) {
+            message.delete().catch(() => null);
+            message.channel.send(`${message.author} | ❌ | You are using too many uppercase letters. Please limit it to around 5.`).then(m => m.delete({ timeout: 10000 }));
+
+            // Create a new modlog
+            const channel = message.guild.channels.find("name", this.client.config.logs.modlog);
+            if (!channel) return;
+
+            const previous = (await channel.messages.fetch({ limit: 1 })).filter(c => c.author.id === this.client.user.id);
+            const caseNumber = (previous.size ? parseInt(previous.first().embeds[0].footer.text.split(" ")[1]) + 1 : 1) || 1;
+
+            const embed = new MessageEmbed()
+                .setColor(0xBBFFFF)
+                .setAuthor(`VerifyBot AutoMod`, this.client.user.avatarURL({ size: 128 }))
+                .setDescription(`**User:** ${message.author.tag}\n**Action:** message deleted\n**Reason:** Excessive caps`)
+                .setFooter(`Case ${caseNumber}`)
+                .setTimestamp();
+
+            channel.send({ embed });
+        }
+        
 
         // Verify that message is a command
         if (message.content.indexOf(this.client.config.prefix) === -1) return;
