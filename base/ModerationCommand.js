@@ -6,20 +6,45 @@ const Command = require("./Command");
 */
 class ModerationCommand extends Command {
     /**
-     * @param {Client} client The client passed to the command
+     * @param {CustomClient} client The client passed to the command
      * @param {Object} options The properties of the command
      * @param {Object} logOptions The properties of the moderation log
      * @param {Color} logOptions.color The color for the moderation log
      * @param {String} logOptions.action The name of the action
      */
     constructor(client, options, logOptions) {
+        // Initialise the command
         super(client, options);
 
+        /**
+         * The client used by the command
+         * @type {CustomClient}
+         */
         this.client = client;
+        /**
+         * The color for the embed
+         * @type {Discord.ColorResolvable}
+         */
         this.color = logOptions.color;
+        /**
+         * The action name for the moderation action
+         * @type {String}
+         */
         this.actionName = logOptions.actionName;
+        /**
+         * The executor of the command (null until the setData method has been called)
+         * @type {Discord.GuildMember}
+         */
         this.executor = null;
+        /**
+         * The target for the command (null until the setData method has been called)
+         * @type {Discord.GuildMember}
+         */
         this.target = null;
+        /**
+         * The reason for the moderation action (null until the setData method has been called)
+         * @type {String}
+         */
         this.reason = null;
     }
 
@@ -117,4 +142,5 @@ class ModerationCommand extends Command {
     }
 }
 
+// Export the moderation command class
 module.exports = ModerationCommand;

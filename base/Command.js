@@ -5,7 +5,7 @@ const { perms } = require("../levels.json");
  */
 class Command {
     /**
-     * @param {Client} client The client passed to the command
+     * @param {CustomClient} client The client passed to the command
      * @param {Object} options The properties of the command
      * @param {String} options.name The name of the command
      * @param {String} options.description The description of the command
@@ -16,22 +16,42 @@ class Command {
      * @param {Array} options.aliases The command aliases
      */
     constructor(client, options) {            
+        /**
+         * The client passed to the command
+         * @type {CustomClient}
+         */
         this.client = client;
-        
+
+        /**
+         * The command's help properties
+         * @type {Object}
+         */
         this.help = {
             name: options.name || "unset",
             description: options.description || "No description provided.",
             usage: options.usage || "",
             category: options.category || "information"
         };
-
+        
+        /**
+         * The command's config properties
+         * @type {Object}
+         */
         this.conf = {
             level: options.permLevel || 0,
             cooldown: options.cooldown || 10000,
             aliases: options.aliases || []
         };
 
+        /**
+         * The message used for the respond and error methods
+         * @type {Discord.Message}
+         */
         this.message = null;
+        /**
+         * The command's cooldown
+         * @type {Set}
+         */
         this.cooldown = new Set();
     }
 
@@ -57,11 +77,12 @@ class Command {
     /**
      * Puts a user on cooldown
      * @param {String} userID The ID of the user to put on cooldown
-     * @returns {undefined}
      */
     startCooldown(userID) {
+        // Add the user to the cooldown set
         this.cooldown.add(userID);
 
+        // Delete them from the set after the specified amount of time in the config
         setTimeout(() => this.cooldown.delete(userID), this.conf.cooldown);
     }
 
@@ -85,8 +106,8 @@ class Command {
 
     /**
      * Returns an "s" if size is greater than 1, or an empty string if not
-     * @param {Number} size The size of the item
-     * @returns {String}
+     * @param {Number} The size of the item
+     * @returns {String} S or simply an empty string
      */
     s(size) {
         return size === 1 ? "" : "s";
@@ -94,11 +115,12 @@ class Command {
 
     /**
      * Fetches the command's required permission level
-     * @returns {PermLevel} The command's required permission level
+     * @returns {Object} The command's required permission level
      */
     get permLevel() {
         return perms.find(p => p.level === this.conf.level) || perms[0];
     }
 }
 
+// Export the command class
 module.exports = Command;

@@ -5,25 +5,48 @@ const mysql = require("mysql");
 const levels = require("../levels.json");
 
 /**
- * Represents a Discord client.
+ * Represents a Discord client
  * @extends {Discord.Client}
  */
 class CustomClient extends Client {
     /**
-     * @param {ClientOptions} clientOptions The options passed through the client. 
+     * @param {ClientOptions} clientOptions The options passed through the client.
      */
     constructor(clientOptions) {
+        // Initialise client
         super(clientOptions);
 
+        /**
+         * A collection of all of the bot's commands
+         * @type {Discord.Collection}
+         */
         this.commands = new Collection();
+        /**
+         * A collection of all of the bot's command aliases
+         * @type {Discord.Collection}
+         */
         this.aliases = new Collection();
-        this.events = new Collection();
 
+        /**
+         * A collection of all of every user's verification attempts
+         * @type {Discord.Collection}
+         */
         this.attempts = new Collection();
+        /**
+         * A collection of all of every user's verification cooldown times
+         * @type {Discord.Collection}
+         */
         this.cooldowns = new Collection();
+        /**
+         * A collection of every user's verification tokens
+         * @type {Discord.Collection}
+         */
         this.tokens = new Collection();
-        this.mutes = new Collection();
 
+        /**
+         * The bot's config data
+         * @type {Object}
+         */
         this.config = {};
 
         setInterval(async () => {
@@ -53,8 +76,9 @@ class CustomClient extends Client {
     }
 
     /**
-     * Sets the config path used for the bot.
+     * Sets the config path used for the bot
      * @param {String} path 
+     * @returns {CustomClient} The current client
      */
     setConfig(path) {
         this.config = require(`../${path}`); //eslint-disable-line global-require
@@ -63,10 +87,11 @@ class CustomClient extends Client {
     }
 
     /**
-     * Creates a mysql connection.
-     * @param {String} user The user used.
-     * @param {String} pass The password used.
-     * @param {String} db The database used.
+     * Creates a mysql connection
+     * @param {String} user The user used
+     * @param {String} pass The password used
+     * @param {String} db The database used
+     * @returns {CustomClient} The current client
      */
     sql(user, pass, db) {
         this.connection = mysql.createConnection({
@@ -77,54 +102,65 @@ class CustomClient extends Client {
             port: 3306
         });
 
-        this.connection.connect((err) => {
+        this.connection.connect(err => {
             if (err) throw err;
-            console.log(`Connected to sql database.`);
+            console.log("Connected to sql database.");
         });
 
         return this;
     }
 
     /**
-     * Loads all commands in the specified directory.
-     * @param {String} path The filepath in which the commands are located.
+     * Loads all commands in the specified directory
+     * @param {String} path The filepath in which the commands are located
+     * @returns {CustomClient} The current client
      */
     loadCommands(path) {
-    readdir(`${path}/`, (error, categories) => {
-        categories.forEach(category => {
-            readdir(`${path}/${category}/`, (err, commands) => {
-                if (err) return;
+        // Read from the commands directory
+        readdir(`${path}/`, (error, categories) => {
+            // Run through every command category
+            categories.forEach(category => {
+                // Fetch commands from the current category
+                readdir(`${path}/${category}/`, (err, commands) => {
+                    // Run through every command in the current category
+                    commands.forEach(command => {
+                        // Initialise the command
+                        const props = new (require(`../${path}/${category}/${command}`))(this); //eslint-disable-line global-require
+                        // Define the command's filepath
+                        props.conf.filepath = `${path}/${category}/${command}`;
+                        // Add the command to the commands collection
+                        this.commands.set(props.help.name, props);
+                        
+                        // If the command has an init function, run it
+                        if (props.init) props.init(this);
 
-                commands.forEach(command => {
-                    const props = new (require(`../${path}/${category}/${command}`))(this); //eslint-disable-line global-require
-
-                    props.conf.filepath = `${path}/${category}/${command}`;
-
-                    this.commands.set(props.help.name, props);
-
-                    if (props.init) props.init();
-
-                    props.conf.aliases.forEach(alias => this.aliases.set(alias, props.help.name));
+                        // Run through every alias and add it to the collection
+                        props.conf.aliases.forEach(alias => this.aliases.set(alias, props.help.name));
+                    });
                 });
             });
         });
-    });
 
-    return this;
+        return this;
     }
 
     /**
-     * Loads all events in the specified directory.
-     * @param {String} path The filepath in which the events are located.
+     * Loads all events in the specified directory
+     * @param {String} path The filepath in which the events are located
+     * @returns {CustomClient} The current client
      */
     loadEvents(path) {
+        // Read from the events directory
         readdir(path, (error, events) => {
+            // Run through every event
             events.forEach(event => {
+                // Initialise the event
                 const props = new (require(`../${path}/${event}`))(this); //eslint-disable-line global-require
-
+                // Add an event emitter
                 super.on(event.split(".")[0], (...args) => props.run(...args));
 
-                if (props.init) props.init();
+                // If the event has an init function, run it
+                if (props.init) props.init(this);
             });
         });
 
@@ -134,63 +170,53 @@ class CustomClient extends Client {
     /**
      * Logs the client into Discord.
      * @param {String} token The bot's token. 
+     * @returns {CustomClient} The current client
      */
     start(token) {
+        // Login with the specified token
         super.login(token);
 
         return this;
     }
 
-    async fetchWeeklyData() {
-        const fetch = require("../methods/restricted/fetchWeeklyData"); //eslint-disable-line global-require
-
-        const data = await fetch(this);
-        const announcements = this.guild.channels.find("name", "announcements");
-        const message = [
-            "Hello, @everyone! It's the end of the week, so we'll be going through the top 5 creators, plots, and support of the month!",
-            `\`\`\`asciidoc\n== Top Creators\nBeta\`\`\``,
-            `\`\`\`asciidoc\n== Top Plots\nBeta\`\`\``,
-            `\`\`\`asciidoc\n== Top Support\n${data.topSupport.map((info, index) => `${index + 1} :: ${info.name} with ${info.sessions} sessions`).join("\n")}\`\`\``
-        ];
-
-        announcements.send(message.join("\n"));
-    }
-
     /**
-     * Creates a mysql query.
-     * @param {String} sql The sql code to execute.
+     * Creates a mysql query
+     * @param {String} sql The sql code to execute
+     * @returns {Promise<Array>} An array of results
      */
     query(sql) {
         return new Promise((resolve, reject) => {
+            // Create a MySQL query from the connection
             this.connection.query(sql, (err, result) => {
                 if (err) return reject(err);
-                return resolve(result);
+                resolve(result);
             });
         });
     }
 
     /**
-     * Fetches a user's permission level.
-     * @param {String} user The ID of the target user. 
+     * Fetches a user's permission level
+     * @param {String} user The ID of the target user
+     * @returns {Promise<Object>} A promise containing the user's permissions
      */
     permLevel(user) {
+        // Fetch the permissions list and sort it by level
         const perms = levels.perms.sort((a, b) => b.level < a.level ? 1 : -1);
-
+        // Define the user's perms as level 0
         let userPerms = perms[0];
 
-        const guild = this.guilds.get(this.config.guild);
-        if (!guild) return new Promise((resolve) => resolve(userPerms));
-
         return new Promise((resolve) => {
-            guild.members.fetch(user).then(member => {
+            // Fetch the guild member
+            this.guild.members.fetch(user).then(member => {
+                // Filter through all permissions applicable to the user and return the highest level fount
                 userPerms = perms.filter(p => (p.role && member.roles.exists("name", p.role)) || (p.ids && p.ids.includes(user))).pop();
                 resolve(userPerms);
-            }).catch((e) => {
-                console.log(e);
+            }).catch(() => {
                 resolve(userPerms);
             });
         });
     }
 }
 
+// Export the custom client
 module.exports = CustomClient;
