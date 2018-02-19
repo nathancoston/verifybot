@@ -59,23 +59,33 @@ const questions = [
     },
     {
         type: "input",
-        name: "logs.messageUpdates",
+        name: "channels.messageUpdates",
         message: "Message Updates Log (Channel Name): "
     },
     {
         type: "input",
-        name: "logs.joins",
+        name: "channels.joins",
         message: "Join Log (Channel Name): "
     },
     {
         type: "input",
-        name: "logs.verification",
+        name: "channels.verification",
         message: "Verification Log (Channel Name): "
     },
     {
         type: "input",
-        name: "logs.modlog",
+        name: "channels.modlog",
         message: "Moderation Log (Channel Name):"
+    },
+    {
+        type: "input",
+        name: "channels.staffchat",
+        message: "Staffchat (Channel Name):"
+    },
+    {
+        type: "input",
+        name: "channels.announcements",
+        message: "Announcements (Channel Name):"
     }
 ];
 
