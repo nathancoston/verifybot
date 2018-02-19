@@ -28,14 +28,14 @@ class ModerationCommand extends Command {
      * @param {Message} message The message used to fetch data
      * @returns {Promise} An empty promise
      */
-    setData(message) {
+    async setData(message) {
         // Fetch message args
         const args = message.content.split(" ").slice(1);
 
         // Get the message member
         this.executor = message.member;
         // Get the target member
-        this.target = message.guild.member(super.verifyUser(args[0]));
+        this.target = message.guild.member(await super.verifyUser(args[0]));
         // Find the reason
         this.reason = args.join(" ").replace(new RegExp(`( |)(${this.target.toString()}|${this.target.id})( |)`), "");
 
@@ -96,8 +96,8 @@ class ModerationCommand extends Command {
      * @returns {Promise<Message>} The moderation log sent
     */
     async send() {
-        const channel = this.client.channels.find("name", this.client.config.logs.modlog);
-        if (!channel) return super.error(`No moderation log found. Create a channel named \`${this.client.config.logs.modlog}\` to use moderation commands.`);
+        const channel = this.client.channels.find("name", this.client.config.channels.modlog);
+        if (!channel) return super.error(`No moderation log found. Create a channel named \`${this.client.config.channels.modlog}\` to use moderation commands.`);
         if (!this.target) return super.error("No target found.");
         if (!this.executor) throw new Error(`No executor specified for the moderation command ${this.actionName}. Set the executor with super.setExecutor(message.author);`);
 
