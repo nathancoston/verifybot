@@ -10,7 +10,7 @@
     </nav>
   <% } %>
 
-  <div class="container body">
+  <div class="container mt-3">
     <% if (data.error) { %>
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>Error:</strong> <%- data.error %>
@@ -27,25 +27,30 @@
         </button>
       </div>
     <% } %>
-    <form method="post">
-      <div class="form-group">
-        <label for="username">Minecraft Username</label>
-        <input type="text" class="form-control" name="username">
-      </div>
-      <div class="form-group">
-        <label for="key">Secret Key</label>
-        <input type="text" class="form-control" name="key">
-      </div>
-      <br><button type="submit" class="btn btn-info verify"><span class="fa fa-check"></span> Verify</button><br>
-      <b>Don't have a secret key? Get one!</b>
-      <ol>
-        <li>Log onto the <kbd>mcdiamondfire.com</kbd> minecraft server.</li>
-        <li>Type <kbd>/verify</kbd> in chat to get your secret key.</li>
-        <li>Enter that secret key in the box above.</li>
-        <li>You'll get sent a confirmation link via private message on Discord.</li>
-        <li>Click the link given, and your account will be verified!</li>
-      </ol>
-    </form>
+    <% if (client.guild.onLockdown) { %>
+      <form method="post">
+        <div class="form-group">
+          <label for="username">Minecraft Username</label>
+          <input type="text" class="form-control" name="username">
+        </div>
+        <div class="form-group">
+          <label for="key">Secret Key</label>
+          <input type="text" class="form-control" name="key">
+        </div>
+        <br><button type="submit" class="btn btn-info verify"><span class="fa fa-check"></span> Verify</button><br>
+        <b>Don't have a secret key? Get one!</b>
+        <ol>
+          <li>Log onto the <kbd>mcdiamondfire.com</kbd> minecraft server.</li>
+          <li>Type <kbd>/verify</kbd> in chat to get your secret key.</li>
+          <li>Enter that secret key in the box above.</li>
+          <li>You'll get sent a confirmation link via private message on Discord.</li>
+          <li>Click the link given, and your account will be verified!</li>
+        </ol>
+      </form>
+    <% } else { %>
+      <h1>The server is currently on lockdown!</h1>
+      This means that you are not currently able to verify your account. Please try again later.
+    <% } %>
   </div>
 
   <%- include("blocks/footer.ejs") %>

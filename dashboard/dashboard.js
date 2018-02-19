@@ -4,6 +4,7 @@ const { MessageEmbed } = require("discord.js");
 const ejs = require("ejs");
 const express = require("express");
 const session = require("express-session");
+const { readdir } = require("fs");
 const LevelStore = require("level-session-store")(session);
 const passport = require("passport");
 const { Strategy } = require("passport-discord");
@@ -60,16 +61,26 @@ module.exports = (client) => {
 
     app.locals.domain = client.config.dashboard.domain;
 
+    function checkAuth(req, res, next) {
+        if (req.isAuthenticated()) return next();
+        return res.redirect("/login");
+    }
+
     // Use EJS engine
     app.engine("html", ejs.renderFile);
     app.set("view engine", "html");
+    
+    // Define client variable
+    app.set("client", client);
+    app.set("templateDir", templateDir);
 
-    // AUTH checks
-    function checkAuth(req, res, next) {
-        if (req.isAuthenticated()) return next();
-
-        res.redirect("/login");
-    }
+    // Routing
+    readdir("dashboard/routes", (err, files) => {
+        files.forEach(route => {
+            const data = require(`./routes/${route}`); //eslint-disable-line global-require
+            app.use(data.name, data.router);
+        });
+    });
     
     // Login
     app.get("/login", (req, res, next) => {
@@ -99,6 +110,7 @@ module.exports = (client) => {
 
     // Verification page
     app.get("/", checkAuth, async (req, res) => {
+        console.log(req.isAuthenticated());
         // Create a data object to be passed to the client
         const data = { error: null, message: null };
 
@@ -161,50 +173,6 @@ module.exports = (client) => {
             auth: true,
             user: req.user,
             perms: await client.permLevel(req.user.id)
-        });
-    });
-
-    // Render staff panel
-    app.get("/staff", checkAuth, async (req, res) => {
-        // Fetch user permissions
-        const perms = await client.permLevel(req.user.id);
-
-        // If member is not staff, throw 404 error
-        if (perms.level < 2) return res.status(404);
-
-        // Fetch guild member
-        const member = await client.guild.members.fetch(req.user.id);
-
-        // Fetch account, session, and queue data
-        const { account, sessions, queue } = await (require("../methods/restricted/fetchSupportData"))(client, req.user.id); //eslint-disable-line global-require 
-
-        // Defined later if user is moderator or above
-        let reports;
-
-        // If user is moderator or above...
-        if (perms.level >= 4) {
-            // Fetch max of 25 messages from reports
-            reports = await member.guild.channels.find("name", "reports").messages.fetch({ limit: 25 });
-            // Remove accepted reports and non-reports
-            reports = reports.filter(r => (!r.reactions.first() || r.reactions.first().count === 0) && (r.embeds.length > 0 || r.attachments.size > 0));
-        }
-
-        // Render staff panel
-        res.render(`${templateDir}/staff.ejs`, {
-            client,
-            auth: true,
-            user: req.user,
-            perms,
-            member,
-            error: req.query.error || null,
-            message: req.query.message || null,
-            ms: require("pretty-ms"), //eslint-disable-line global-require
-            data: {
-                account: account[0],
-                sessions,
-                queue,
-                reports
-            }
         });
     });
 
@@ -292,72 +260,6 @@ module.exports = (client) => {
                 client.tokens.delete(req.user.id);
             }, 180000);
         });
-    });
-
-    // When form on staff panel is submitted...
-    app.post("/staff", checkAuth, async (req, res) => {
-        // Fetch user perms
-        const perms = await client.permLevel(req.user.id);
-        // Fetch guild member
-        const member = await client.guild.members.fetch(req.user.id);
-
-        // If member is not staff, throw 404 error
-        if (perms.level < 2) return res.status(404);
-
-        if (req.body.username) {
-            // Fetch target member
-            const target = member.guild.members.get(req.body.username) || member.guild.members.find("displayName", req.body.username);
-            // If target is invalid, throw an error
-            if (!target) return res.redirect("/staff?error=Unable to locate target. Please try using their user ID.");
-
-            try {
-                // If instructed to notify user of the action, send them a message.
-                if (req.body.message) await target.send(`You have been ${req.body.action === "kick" ? "kicked" : `${req.body.action}ned`} by a moderator${req.body.reason ? ` for \`${req.body.reason}\`` : ""}`);
-
-                // If the action is a kick...
-                if (req.body.action === "kick") {
-                    // Kick the user with the specified reason
-                    target.kick(req.body.reason);
-                    // If action is softban...
-                } else if (req.body.action === "softban") {
-                    // Ban the member, then unban them, purging their messages
-                    target.ban({ reason: req.body.reason, days: 7 }).then(() => target.guild.unban(target.id, "Softban Unban"));
-                    // If action is ban...
-                } else if (req.body.action === "ban") {
-                    // Ban the user with specified reason
-                    target.ban({ reason: req.body.reason });
-                }
-            } catch (e) {
-                // If an error occurs whilst executing action, throw it
-                res.redirect("/staff?error=An error occured whilst attempting to perform this action.");
-            }
-
-            // Notify the user that the action was successful
-            res.redirect(`/staff?message=Successfully executed ${req.body.action} on ${target.displayName}.`);
-        } else if (req.body.roles_username) {
-            // Fetch target member
-            const target = await member.guild.members.get(req.body.roles_username) || member.guild.members.find("displayName", req.body.roles_username);
-            // If target is invalid, throw an error
-            if (!target) return res.redirect("/staff?error=Unable to locate target. Please try using their user ID.");
-
-            try {
-                // Verify the role
-                const role = member.guild.roles.get(req.body.role);
-                // If role is invalid, throw an error
-                if (!role) return res.redirect("/staff?error=Unknown role.");
-                
-                // If action is add, give them the role
-                if (req.body.roles_action === "add") target.roles.add(req.body.role);
-                // If action is remove, remove the role
-                if (req.body.roles_action === "remove") target.roles.remove(req.body.role);
-
-                // Notify the user that the action was successful
-                return res.redirect(`/staff?message=Successfully ${req.body.roles_action === "add" ? "added" : "removed"} the role from ${target.displayName}.`);
-            } catch (e) {
-                // If an error occurs whilst executing action, throw it
-                res.redirect("/staff?error=An error occured whilst attempting to perform this action.");
-            }
-        } else res.redirect("/staff?error=Please fill out the form.");
     });
 
     // Listen on port 4040

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include("blocks/head.ejs") %>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+        <a class="navbar-brand" href="/staff"><span class="fa fa-lock"></span> Staff Panel</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content" aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav-content">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/staff/support">Support Panel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/staff/mod">Mod Panel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/staff/admin">Admin Panel</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+        <% if (mode === "success") { %>
+            <h1 class="text-dark"><span class="fa fa-check-circle"></span> Success!</h1>
+        <% } else if (mode === "error") { %>
+            <h1 class="text-primary"><span class="fa fa-times-circle"></span> Something went wrong...</h1>
+        <% } %>
+        <h1>Bot Stats</h1>
+        <ul>
+            <li><b><%= client.guild.memberCount %></b> total members.</li>
+            <li><b><%= client.guild.members.filter(m => m.roles.exists("name", "Verified")).size %></b> verified members.</li>
+            <li>VerifyBot has been online for <b><%= data.ms(client.uptime, { verbose: true, secDecimalDigits: 0 }) %></b>.</li>
+        </ul>
+
+        <h1>Admin Controls</h1>
+        <ul class="nostyle">
+            <li class="mb-1"><a href="admin/lockdown" class="btn btn-danger" data-toggle="tooltip" title="Prevents users from verifying and disables sending messages.">Toggle Lockdown Mode (Lockdown <%= client.onLockdown ? "on" : "off" %>)</a></li>
+            <li class="mb-1"><a href="admin/lockdown/force-disable" class="btn btn-danger" data-toggle="tooltip" title="Only necessary if the bot restarted since a lockdown was enabled.">Force Disable Lockdown</a></li>
+        </ul>
+
+        <h1>Manage Bans</h1>
+        <ul class="nostyle">
+            <li><a href="admin/bans" class="btn btn-danger">View Bans List</a></li>
+        </ul>
+
+        <h1>Post an Announcement</h1>
+        <form method="post" action="admin/announcement">
+            <div class="form-group">
+                <label>Title</label>
+                <input class="form-control" name="title" placeholder="Congrats!">
+            </div>
+            <div class="form-group">
+                <label>Main Content</label>
+                <textarea class="form-control" name="body" placeholder="@RedstoneDaedalus has been promoted to the rank of **Admin**! Make sure to give them your congrats"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Role to Mention</label>
+                <select name="role" class="form-control">
+                    <option value="@everyone">@everyone</option>
+                    <option value="@here">@here</option>
+                    <option value="none">No Mention</option>
+                </select>
+            </div>
+            <div class="form-check">
+                <input name="anonymous" type="checkbox" class="form-check-input">
+                <label>Anonymous?</label>
+            </div>
+            <div class="form-group">
+                <label>Color</label>
+                <input name="color" class="form-control" value="#FFFFFF">
+            </div>
+
+            <button type="submit" class="btn btn-danger"><span class="fa fa-share-square"></span> Post</button>
+        </form>
+    </div>
+
+    <%- include("../blocks/footer.ejs") %>
+</body>
+
+</html>
