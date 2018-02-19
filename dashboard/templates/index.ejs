@@ -5,7 +5,7 @@
 
 <body>
   <% if (perms.level >= 2) { %>
-    <nav class="navbar navbar-expand-md navbar-dark bg-info">
+    <nav class="navbar navbar-expand-md navbar-light bg-none">
       <a class="navbar-brand" href="staff"><span class="fa fa-lock"></span> Staff Panel</a>
     </nav>
   <% } %>
@@ -27,7 +27,7 @@
         </button>
       </div>
     <% } %>
-    <% if (client.guild.onLockdown) { %>
+    <% if (!client.onLockdown) { %>
       <form method="post">
         <div class="form-group">
           <label for="username">Minecraft Username</label>

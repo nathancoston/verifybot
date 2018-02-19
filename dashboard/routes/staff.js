@@ -1,31 +1,21 @@
-const { get } = require("snekfetch");
 const { MessageEmbed } = require("discord.js");
 const ms = require("pretty-ms");
 const { Router } = require("express");
 
 const checkAuth = require("../functions/checkAuth");
+const fetchVariables = require("../functions/fetchVariables");
 const fetchSupportData = require("../../methods/restricted/fetchSupportData");
 
 // Initialise router
 const router = Router();
 
-/**
- * Fetches client and templateDir variables
- * @param {Request} req The request to fetch variables from
- */
-function fetchVariables(req) {
-    const client = req.app.get("client");
-    const templateDir = req.app.get("templateDir");
-
-    return { client, templateDir };
-}
 
 // GET staff/
 router.get("/", checkAuth, async (req, res) => {
     // Fetch variables
     const { client, templateDir } = fetchVariables(req);
     // Calculate user permissions
-    const perms = client.permLevel(req.user.id);
+    const perms = await client.permLevel(req.user.id);
     // If user is not staff, throw a 404
     if (perms.level < 2) return res.status(404);
 
@@ -110,10 +100,6 @@ router.get("/mod", checkAuth, async (req, res) => {
     // Filter reports and slice them
     const filtered = reports.filter(r => (!r.reactions.first() || r.reactions.first().count === 0) && (r.embeds.length > 0 || r.attachments.size > 0) && /([a-zA-Z0-9]{2,16})[\s|](\||-|:|is)[\s|](.+)/g.exec(r.content).length >= 4).array().slice(0, 4);
 
-    // Fetch server stats
-    const body = await get("https://api.mcsrvstat.us/1/mcdiamondfire.com");
-    const json = body.text ? JSON.parse(body.text) : { players: { online: 0 } };
-
     // Render file
     res.render(`${templateDir}/staff/mod.ejs`, {
         client,
@@ -122,8 +108,7 @@ router.get("/mod", checkAuth, async (req, res) => {
         perms,
         mode: req.query.mode,
         data: {
-            reports: filtered,
-            stats: json
+            reports: filtered
         }
     });
 });
@@ -286,7 +271,4 @@ router.post("/admin/announcement", checkAuth, async (req, res) => {
 });
 
 // Export the router
-module.exports = {
-    router,
-    name: "/staff"
-};
+module.exports = router;

@@ -64,13 +64,6 @@
                 </table>
             </li>
         </ul>
-
-        <h1>Server Stats</h1>
-        <ul>
-            <li>There are currently <b><%= data.stats.players.online %></b>/<b><%= data.stats.players.max %></b> players online. (<%= Math.round((data.stats.players.online / data.stats.players.max) * 100) %>% capacity)</li>
-            <li>The current MOTD is:<br><kbd><%- data.stats.motd.html.join("</kbd> <br /> <kbd>") %></kbd></li>
-            <li>Server running on the IP <kbd><%= data.stats.ip %></kbd> on port <b><%= data.stats.port %></b>.</li>
-        </ul>
     </div>
 
     <%- include("../blocks/footer.ejs") %>

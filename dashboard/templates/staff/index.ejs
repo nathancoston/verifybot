@@ -14,19 +14,23 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/staff/support">Support Panel</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/staff/mod">Mod Panel</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/staff/admin">Admin Panel</a>
-                </li>
+                <% if (perms.level >= 4) { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/staff/mod">Mod Panel</a>
+                    </li>
+                <% } %>
+                <% if (perms.level >= 5) { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/staff/admin">Admin Panel</a>
+                    </li>
+                <% } %>
             </ul>
         </div>
     </nav>
 
     <div class="container mt-3">
         <h1>Welcome to the staff panel!</h1>
-        The staff panel has a bunch of useful features for support, moderators, and admins. You can see a ban list, manage members, check queue, and more! If you have any suggestions, private message them to <kbd>@Redstone#9001</kbd>. <i>Please do not suggest things that have already been denied. Thank you.</i>
+        Welcome to the staff panel, <%= user.username %>! You are currently <%= perms.name %>. The staff panel has a bunch of useful features for support, moderators, and admins. You can see a ban list, manage members, check queue, and more!</i>
     </div>
 
     <%- include("../blocks/footer.ejs") %>
