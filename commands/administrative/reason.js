@@ -15,7 +15,7 @@ module.exports = class Reason extends Base {
             // If case length is too short, throw an error
             if (args.length < 2) return super.error("Please specify both a case number and reason.");
             // Fetch the modlogs channel
-            const channel = message.guild.channels.find("name", this.client.config.logs.modlog);
+            const channel = message.guild.channels.find("name", this.client.config.channels.modlog);
             // If there is no modlog channel, throw an error
             if (!channel) return super.error("No modlog channel found.");
             // Fetch 100 messages
