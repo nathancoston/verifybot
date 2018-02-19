@@ -10,7 +10,7 @@ module.exports = class {
         // If message was not sent the guild, return
         if (!newMessage.guild || newMessage.guild.id !== config.guild) return;
         // Fetch logs channel
-        const logs = this.client.channels.find("name", config.logs.messageUpdates);
+        const logs = this.client.channels.find("name", config.channels.messageUpdates);
         // If no logs channel found, return false
         if (!logs) return false;
 

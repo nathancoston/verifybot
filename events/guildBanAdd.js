@@ -14,7 +14,7 @@ module.exports = class {
         const executor = guild.member(entry.executor);
         if (executor.id === this.client.user.id) return;
 
-        const channel = guild.channels.find("name", this.client.config.logs.modlog);
+        const channel = guild.channels.find("name", this.client.config.channels.modlog);
         if (!channel) return;
 
         const previous = (await channel.messages.fetch({ limit: 1 })).filter(c => c.author.id === this.client.user.id);
