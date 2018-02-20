@@ -44,6 +44,7 @@
                             <th scope="col">User</th>
                             <th scope="col">Offense</th>
                             <th scope="col">Attachment</th>
+                            <th scope="col">Handle</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,6 +58,15 @@
                                 <td>${report[0]}</td>
                                 <td>${report[2]}</td>
                                 <td>${attachment ? `<a href="${attachment}" target="blank" class="btn btn-success" data-toggle="tooltip" title="Only downloaded if the attachment is a file.">View/Download</a>` : "No image found."}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mark as...</button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="mod/report/${r.id}/accept">Accepted</a>
+                                            <a class="dropdown-item" href="mod/report/${r.id}/deny">Denied</a>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                             `;
                         }).join("\n") %>

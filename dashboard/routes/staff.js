@@ -113,6 +113,61 @@ router.get("/mod", checkAuth, async (req, res) => {
     });
 });
 
+// GET staff/mod/report/:id/accept
+router.get("/mod/report/:id/accept", checkAuth, async (req, res) => {
+    // Fetch variables
+    const { client } = fetchVariables(req);
+    // Calculate user permissions
+    const perms = await client.permLevel(req.user.id);
+    // If user is not mod, throw a 404
+    if (perms.level < 4) return res.status(404);
+
+    try {
+        // Fetch the guild member
+        const member = await client.guild.members.fetch(req.user.id);
+        // Fetch the reports channel
+        const channel = client.channels.find("name", "reports");
+        // Fetch the report
+        const message = await channel.messages.fetch(req.params.id);
+        // Add a reaction to the report
+        await message.react("✅");
+        // Send a message to the reports channel
+        await message.channel.send(`${message.author} | ✅ | Your report has been accepted by ${member.displayName}!`);
+        // Redirect the user
+        res.redirect("/staff/mod?mode=success");
+    } catch (e) {
+        res.redirect("/staff/mod?mode=error");
+    }
+});
+
+// GET staff/mod/report/:id/deny
+router.get("/mod/report/:id/deny", checkAuth, async (req, res) => {
+    // Fetch variables
+    const { client } = fetchVariables(req);
+    // Calculate user permissions
+    const perms = await client.permLevel(req.user.id);
+    // If user is not mod, throw a 404
+    if (perms.level < 4) return res.status(404);
+
+    try {
+        // Fetch the guild member
+        const member = await client.guild.members.fetch(req.user.id);
+        // Fetch the reports channel
+        const channel = client.channels.find("name", "reports");
+        // Fetch the report
+        const message = await channel.messages.fetch(req.params.id);
+        // Add a reaction to the report
+        await message.react("❌");
+        // Send a message to the reports channel
+        await message.channel.send(`${message.author} | ❌ | Your report has been denied by ${member.displayName}.`);
+        // Redirect the user
+        res.redirect("/staff/mod?mode=success");
+    } catch (e) {
+        console.log(e);
+        res.redirect("/staff/mod?mode=error");
+    }
+});
+
 // GET staff/admin
 router.get("/admin", checkAuth, async (req, res) => {
     // Fetch variables
