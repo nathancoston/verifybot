@@ -262,6 +262,7 @@ router.post("/admin/announcement", checkAuth, async (req, res) => {
     if (req.body.anonymous !== "on") embed.setAuthor(`${member.displayName} (${member.user.tag})`, member.user.avatarURL({ size: 128, format: "jpg" }));
     if (req.body.title) embed.setTitle(req.body.title);
     if (req.body.body) embed.setDescription(req.body.body);
+    if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(req.body.image)) embed.setImage(req.body.image);
     if (req.body.color && !isNaN(parseInt(req.body.color.replace("#", ""), 16))) embed.setColor(req.body.color);
 
     const text = `${req.body.role === "none" ? "" : `${req.body.role} | `}A new announcement has been posted!`;
