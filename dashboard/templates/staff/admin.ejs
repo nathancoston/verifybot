@@ -4,7 +4,7 @@
 <%- include("blocks/head.ejs") %>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-admin">
         <a class="navbar-brand" href="/staff"><span class="fa fa-lock"></span> Staff Panel</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content" aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -39,13 +39,9 @@
 
         <h1>Admin Controls</h1>
         <ul class="nostyle">
-            <li class="mb-1"><a href="admin/lockdown" class="btn btn-danger" data-toggle="tooltip" title="Prevents users from verifying and disables sending messages.">Toggle Lockdown Mode (Lockdown <%= client.onLockdown ? "on" : "off" %>)</a></li>
-            <li class="mb-1"><a href="admin/lockdown/force-disable" class="btn btn-danger" data-toggle="tooltip" title="Only necessary if the bot restarted since a lockdown was enabled.">Force Disable Lockdown</a></li>
-        </ul>
-
-        <h1>Manage Bans</h1>
-        <ul class="nostyle">
-            <li><a href="admin/bans" class="btn btn-danger">View Bans List</a></li>
+            <li class="mb-1"><a href="admin/lockdown" class="btn btn-admin" data-toggle="tooltip" title="Prevents users from verifying and disables sending messages.">Toggle Lockdown Mode (Currently <%= data.onLockdown ? "on" : "off" %>)</a></li>
+            <li class="mb-1"></li>
+            <li class="mb1"><a href="admin/bans" class="btn btn-admin">View Bans</a></li>
         </ul>
 
         <h1>Post an Announcement</h1>
@@ -81,7 +77,7 @@
                 <input name="color" class="form-control" value="#7289DA">
             </div>
 
-            <button type="submit" class="btn btn-danger"><span class="fa fa-share-square"></span> Post</button>
+            <button type="submit" class="btn btn-admin"><span class="fa fa-share-square"></span> Post</button>
         </form>
     </div>
 

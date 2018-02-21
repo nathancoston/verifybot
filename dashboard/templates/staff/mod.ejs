@@ -4,7 +4,7 @@
 <%- include("blocks/head.ejs") %>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-mod">
         <a class="navbar-brand" href="/staff"><span class="fa fa-lock"></span> Staff Panel</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content" aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -57,10 +57,10 @@
                                 <td>${r.author.tag}</td>
                                 <td>${report[0]}</td>
                                 <td>${report[2]}</td>
-                                <td>${attachment ? `<a href="${attachment}" target="blank" class="btn btn-success" data-toggle="tooltip" title="Only downloaded if the attachment is a file.">View/Download</a>` : "No image found."}</td>
+                                <td>${attachment ? `<a href="${attachment}" target="blank" class="btn btn-mod" data-toggle="tooltip" title="Only downloaded if the attachment is a file.">View/Download</a>` : "No image found."}</td>
                                 <td>
                                     <div class="dropdown">
-                                        <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mark as...</button>
+                                        <button class="btn btn-mod dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mark as...</button>
                                         <div class="dropdown-menu">
                                             <a class="dropdown-item" href="mod/report/${r.id}/accept">Accepted</a>
                                             <a class="dropdown-item" href="mod/report/${r.id}/deny">Denied</a>

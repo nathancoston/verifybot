@@ -27,7 +27,11 @@
         </button>
       </div>
     <% } %>
-    <% if (!client.onLockdown) { %>
+    <%
+    const verified = client.guild.roles.find("name", "Verified");
+    const chatChannels = client.guild.channels.filter(channel => channel.type === "text" && ["dfchat", "offtopic", "reports"].includes(channel.name));
+    const onLockdown = chatChannels.filter(c => c.permissionsFor(verified).has("SEND_MESSAGES")).size === 0;
+    if (!onLockdown) { %>
       <form method="post">
         <div class="form-group">
           <label for="username">Minecraft Username</label>

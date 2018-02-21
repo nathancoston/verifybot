@@ -177,6 +177,13 @@ router.get("/admin", checkAuth, async (req, res) => {
     // If user is not admin, throw a 404
     if (perms.level < 5) return res.status(404);
 
+    // Fetch chat channels
+    const chatChannels = client.guild.channels.filter(channel => channel.type === "text" && ["dfchat", "offtopic", "reports"].includes(channel.name));
+    // Fetch verified role
+    const verified = client.guild.roles.find("name", "Verified");
+    // Fetch wether or not the server is on cooldown
+    const onLockdown = chatChannels.filter(c => c.permissionsFor(verified).has("SEND_MESSAGES")).size === 0;
+
     // Render file
     res.render(`${templateDir}/staff/admin.ejs`, {
         client,
@@ -185,7 +192,8 @@ router.get("/admin", checkAuth, async (req, res) => {
         perms,
         mode: req.query.mode,
         data: {
-            ms
+            ms,
+            onLockdown
         }
     });
 });
@@ -203,13 +211,13 @@ router.get("/admin/lockdown", checkAuth, async (req, res) => {
     const chatChannels = client.guild.channels.filter(channel => channel.type === "text" && ["dfchat", "offtopic", "reports"].includes(channel.name));
     // Fetch verified role
     const verified = client.guild.roles.find("name", "Verified");
+    // Fetch wether or not the server is on cooldown
+    const onLockdown = chatChannels.filter(c => c.permissionsFor(verified).has("SEND_MESSAGES")).size === 0;
     // Fetch announcements channel
     const announcements = client.channels.find("name", client.config.channels.announcements);
 
     // If lockdown is active, disable it
-    if (client.onLockdown) {
-        // Set onLockdown to false
-        client.onLockdown = false;
+    if (onLockdown) {
         // Run through all chat channels and disable the lockdown
         chatChannels.forEach(channel => channel.overwritePermissions(verified, { SEND_MESSAGES: true }, "Lockdown lifted."));
         // Send an announcement
@@ -220,43 +228,11 @@ router.get("/admin/lockdown", checkAuth, async (req, res) => {
 
         // If not, enable it
     } else {
-        // Set onLockdown to true
-        client.onLockdown = true;
         // Run through all chat channels and enable the lockdown
         chatChannels.forEach(channel => channel.overwritePermissions(verified, { SEND_MESSAGES: false }, "Lockdown activated."));
         // Send an announcement
         announcements.send("Hello, everyone. An administrator has activated a complete server lockdown. This means that you are no longer able to type in any channels, nor verify your account. Please do not direct message admins, or any staff, unless you feel that it is important information.");
     }
-
-    // Redirect the user
-    res.redirect("/staff/admin?mode=success");
-});
-
-// GET /staff/admin/lockdown/force-disable
-router.get("/admin/lockdown/force-disable", checkAuth, async (req, res) => {
-    // Fetch variables
-    const { client } = fetchVariables(req);
-    // Calculate user permissions
-    const perms = await client.permLevel(req.user.id);
-    // If user is not admin, throw a 404
-    if (perms.level < 5) return res.status(404);
-
-    // Fetch chat channels
-    const chatChannels = client.guild.channels.filter(channel => channel.type === "text" && ["dfchat", "offtopic", "reports"].includes(channel.name));
-    // Fetch verified role
-    const verified = client.guild.roles.find("name", "Verified");
-    // Fetch announcements channel
-    const announcements = client.channels.find("name", client.config.channels.announcements);
-
-    // If no verified role or announcements found, throw an error
-    if (!verified || !announcements) return res.redirect("/staff/admin?mode=error");
-
-    // Set onLockdown to false
-    client.onLockdown = false;
-    // Run through all chat channels and disable the lockdown
-    chatChannels.forEach(channel => channel.overwritePermissions(verified, { SEND_MESSAGES: true }, "Lockdown lifted."));
-    // Send an announcement
-    announcements.send("The lockdown has been lifted! You can now chat and verify accounts again.");
 
     // Redirect the user
     res.redirect("/staff/admin?mode=success");

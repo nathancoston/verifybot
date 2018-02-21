@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include("blocks/head.ejs") %>
-<link rel="stylesheet" href="../../public/style.css">
-
+    <head>
+        <link rel="stylesheet" href="../../public/style.css">
+        <link rel="stylesheet" href="../../public/bootstrap-4.0.0/css/bootstrap-themed.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="icon" href="https://cdn.discordapp.com/attachments/275170046555324416/348665349576720384/diamondfirelogo.png">
+            
+        <title>VerifyBot Staff Panel | mcdiamondfire.com</title>
+    </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-admin">
         <a class="navbar-brand" href="/staff"><span class="fa fa-lock"></span> Staff Panel</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content" aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -26,7 +31,7 @@
     </nav>
 
     <div class="container mt-3">
-        <h1>Bans <div class="badge badge-danger"><%= data.bans.size %></div></h1>
+        <h1>Bans <div class="badge badge-admin"><%= data.bans.size %></div></h1>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -43,7 +48,7 @@
                         <td>${ban.user.tag}</td>
                         <td>${ban.user.id}</td>
                         <td>${ban.reason || "No reason provided."}</td>
-                        <td><a href="bans/revoke/${ban.user.id}" class="btn btn-danger">Revoke Ban</a></td>
+                        <td><a href="bans/revoke/${ban.user.id}" class="btn btn-admin">Revoke Ban</a></td>
                     </tr>`;
                 }).join("\n") %>
             </tbody>
