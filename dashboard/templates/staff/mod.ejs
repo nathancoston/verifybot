@@ -50,7 +50,7 @@
                     <tbody>
                         <%- data.reports.map(r => {
                             const report = /([a-zA-Z0-9]{2,16})[\s|](\||\-|:|is)[\s|](.+)/.exec(r.content).slice(1);
-                            const attachment = r.attachments.first() ? r.attachments.first().url : r.embeds[0] && (r.embeds[0].image || r.embeds[0].video) ? r.embeds[0].image ? r.embeds[0].image.url : r.embeds[0].video.url : null;
+                            const attachment = r.attachments.first() ? r.attachments.first().url : r.embeds[0] ? r.embeds[0].url : null;
                 
                             return `
                             <tr>
