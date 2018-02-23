@@ -1,63 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<%- include("blocks/head.ejs") %>
-
-<body>
-  <% if (perms.level >= 2) { %>
-    <nav class="navbar navbar-expand-md navbar-light bg-none">
-      <a class="navbar-brand" href="staff"><span class="fa fa-lock"></span> Staff Panel</a>
-    </nav>
-  <% } %>
-
-  <div class="container mt-3">
-    <% if (data.error) { %>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Error:</strong> <%- data.error %>
-        <button type="button" class="close d-none d-md-block" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+   <%- include("blocks/head.ejs") %>
+   <body>
+      <img src="https://cdn.discordapp.com/attachments/180793115223916544/416349121172209664/DF.png" class="icon mt-3 ml-3 mb-3" width="40" height="40"> mcdiamondfire.com
+      <div class="container mt-5">
+         <form method="post">
+            <div class="form-group">
+               <label><span class="fa fa-lock"></span> Secret Key <button type="button" class="btn btn-blurple" data-toggle="modal" data-target="#help">?</button></label>
+               <input type="text" class="form-control" placeholder="AbCd1234">
+            </div>
+            <button type="submit" class="btn btn-blurple"><span class="fa fa-check"></span> Verify</button>
+         </form>
       </div>
-    <% } %>
-    <% if (data.message) { %>
-      <div class="alert alert-primary alert-dismissible fade show" role="alert">
-        <%- data.message %>
-        <button type="button" class="close d-none d-md-block" data-dismiss="alert" aria-lable="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content bg-dark">
+               <div class="modal-header">
+                  <h5 class="modal-title">Verification Help</h5>
+               </div>
+               <div class="modal-body">
+                  <h3>How do I verify myself?</h3>
+                  <ol>
+                     <li>Join the Minecraft server <b>mcdiamondfire.com</b>.</li>
+                     <li>Type <b>/verify</b> in the chat.</li>
+                     <li>Type the <b>secret key</b> given to you into the secret key field on this website.</li>
+                     <li>Click the <button class="btn btn-blurple btn-sm"><span class="fa fa-check"></span> Verify</button> button.</li>
+                     <li>Click on the text that the bot sent you through direct message in Discord.</li>
+                  </ol>
+                  <h3>What does verification do?</h3>
+                  <ul>
+                     <li>You can <b>chat</b> with other players.</li>
+                     <li>You can <b>react</b> to messages.</li>
+                     <li>You can <b>speak</b> with other players in voice channels.</li>
+                  </ul>
+                  <h5>Be careful, you only have <b>10 attempts</b> at verification!</h5>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+               </div>
+            </div>
+         </div>
       </div>
-    <% } %>
-    <%
-    const verified = client.guild.roles.find("name", "Verified");
-    const chatChannels = client.guild.channels.filter(channel => channel.type === "text" && ["dfchat", "offtopic", "reports"].includes(channel.name));
-    const onLockdown = chatChannels.filter(c => c.permissionsFor(verified).has("SEND_MESSAGES")).size === 0;
-    if (!onLockdown) { %>
-      <form method="post">
-        <div class="form-group">
-          <label for="username">Minecraft Username</label>
-          <input type="text" class="form-control" name="username">
-        </div>
-        <div class="form-group">
-          <label for="key">Secret Key</label>
-          <input type="text" class="form-control" name="key">
-        </div>
-        <br><button type="submit" class="btn btn-info verify"><span class="fa fa-check"></span> Verify</button><br>
-        <b>Don't have a secret key? Get one!</b>
-        <ol>
-          <li>Log onto the <kbd>mcdiamondfire.com</kbd> minecraft server.</li>
-          <li>Type <kbd>/verify</kbd> in chat to get your secret key.</li>
-          <li>Enter that secret key in the box above.</li>
-          <li>You'll get sent a confirmation link via private message on Discord.</li>
-          <li>Click the link given, and your account will be verified!</li>
-        </ol>
-      </form>
-    <% } else { %>
-      <h1>The server is currently on lockdown!</h1>
-      This means that you are not currently able to verify your account. Please try again later.
-    <% } %>
-  </div>
+      
+      <%- include("blocks/footer.ejs") %>
 
-  <%- include("blocks/footer.ejs") %>
-</body>
-
+      <script type="text/javascript">
+         const time = new Date("April 1");
+         if (time.getMonth() === 3 && time.getDate() === 1) {
+             $(".icon").attr("src", "https://cdn.discordapp.com/attachments/239551387627814922/416369599597248512/yes.gif");
+             $("body").attr("style", "background-image: url(https://cdn.discordapp.com/attachments/351449501032120330/393472342489169940/unknown.png)")
+         };
+      </script>
+   </body>
 </html>

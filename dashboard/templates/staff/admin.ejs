@@ -40,7 +40,6 @@
         <h1>Admin Controls</h1>
         <ul class="nostyle">
             <li class="mb-1"><a href="admin/lockdown" class="btn btn-admin" data-toggle="tooltip" title="Prevents users from verifying and disables sending messages.">Toggle Lockdown Mode (Currently <%= data.onLockdown ? "on" : "off" %>)</a></li>
-            <li class="mb-1"></li>
             <li class="mb1"><a href="admin/bans" class="btn btn-admin">View Bans</a></li>
         </ul>
 
@@ -65,7 +64,7 @@
             <div class="form-group">
                 <label>Image URL</label>
                 <input type="text" class="form-control" name="image">
-                <small class="text-muted">This currently only accepts image URLs. Upload the image to <a href="https://imgur.com/">imgur.com</a>, or upload it to Discord, right click the image, and click "Copy Link." If you use this method, you cannot delete the message containing the image.</small>
+                <small class="text-muted">This currently only accepts image URLs. Upload the image to <a class="text-admin" href="https://imgur.com/">imgur.com</a>, or upload it to Discord, right click the image, and click "Copy Link." If you use this method, you cannot delete the message containing the image.</small>
             </div>
 
             <div class="form-check">
@@ -81,7 +80,7 @@
         </form>
     </div>
 
-    <%- include("../blocks/footer.ejs") %>
+    <%- include("blocks/footer.ejs") %>
 </body>
 
 </html>

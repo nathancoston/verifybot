@@ -4,7 +4,7 @@
 <%- include("blocks/head.ejs") %>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-blurple">
         <a class="navbar-brand" href="/staff"><span class="fa fa-lock"></span> Staff Panel</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content" aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -33,7 +33,7 @@
         Welcome to the staff panel, <%= user.username %>! You are currently <%= perms.name %>. The staff panel has a bunch of useful features for support, moderators, and admins. You can see a ban list, manage members, check queue, and more!</i>
     </div>
 
-    <%- include("../blocks/footer.ejs") %>
+    <%- include("blocks/footer.ejs") %>
 </body>
 
 </html>
