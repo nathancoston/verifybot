@@ -43,7 +43,7 @@ module.exports = class Help extends Base {
             // Send the user the command data
             message.channel.send({ embed: {
                 title: `Command Help: ${command.help.name}`,
-                description: `\`[param]\` - Optional\n\`<parm>\` - Required\n**» Description**\n${command.help.description}\n**» Usage**\n!${command.help.name} ${command.help.usage}\n**» Permission Level**\n${command.conf.level} (${command.permLevel.name})`
+                description: `\`[param]\` - Optional\n\`<param>\` - Required\n**» Description**\n${command.help.description}\n**» Usage**\n!${command.help.name} ${command.help.usage}\n**» Permission Level**\n${command.conf.level} (${command.permLevel.name})`
             } });
 
             return;
