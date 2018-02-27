@@ -6,7 +6,7 @@ module.exports = class Stats extends Base {
     constructor(client) {
         super(client, {
             name: "stats",
-            description: "Check a support's stats.",
+            description: "Shows your support statistics.",
             usage: "",
             category: "support",
             permLevel: 2

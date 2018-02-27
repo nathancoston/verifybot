@@ -1,4 +1,3 @@
-const ms = require("pretty-ms");
 const Base = require("../../base/Command.js");
 
 module.exports = class Help extends Base {
@@ -13,80 +12,56 @@ module.exports = class Help extends Base {
     }
 
     run(message, args, perms) {
-        // Fetch a list of commands that the user can use
-        const commands = this.client.commands.filter(c => c.conf.level <= perms.level);
-        const aliases = this.client.aliases.filter((alias, command) => commands.has(command));
-
-        // Send full help list
-        if (args.length === 0) {
-            const output = [];
-
-            // Fetch categories
-            const categories = this.filterRepeats(commands.map(c => c.help.category));
-            //Calculate spacing required to make commands evenly spaced
-            const spacing = commands.map(c => c.help.name).reduce((out, cmd) => Math.max(cmd.length, out), 1);
+        // Fetch commands the user has access to
+        const commands = this.client.commands.filter(command => command.conf.level <= perms.level);
+        // Fetch command categories
+        const categories = Array.from(new Set(commands.map(command => command.help.category)));
+        // Fetch highest command length
+        const spacing = commands.map(c => c.help.name).reduce((out, command) => Math.max(command.length, out), 1);
         
-            // Load commands for every category
-            categories.forEach(category => {
-                // Fetch commands in current category
-                const thisCategory = commands.filter(c => c.help.category === category);
-                // Push result to output
-                output.push(`== ${this.toTitleCase(category)}\n${thisCategory.map(c => `${c.help.name + " ".repeat(spacing - c.help.name.length)} :: ${c.help.description}`).join("\n")}`);
-            });
+        // If argument is a valid category...
+        if (categories.length > 1 && categories.includes(args[0])) {
+            // Fetch the category
+            const category = categories.find(c => c === args[0]);
+            // Fetch commands within the category
+            const targets = commands.filter(command => command.help.category === category);
 
-            // Send the user the formatted output
-            message.author.send(`[ Commands ]\n\n${output.join("\n\n")}`, { code: "asciidoc" }).catch(() => super.error("You have direct messages disabled."));
+            // Send the user a list of the commands in that category
+            message.channel.send({ embed: {
+                title: `Command Category: \`${category}\``,
+                description: targets.map(command => `\`${command.help.name}\`\n${command.help.description}\nUsage: \`!${command.help.name} ${command.help.usage}\``).join("\n")
+            } });
 
-            // Send specific command help
-        } else {
-            // Find the command
-            const command = commands.find(c => c.help.name === args[0].toLowerCase()) || aliases.get(args[0].toLowerCase());
-            // Throw error if command is invalid
-            if (!command) return super.error("Unknown command.");
-
-            // Send the user an embed containing command details
-            message.author.send({ embed: {
-                color: 16777215,
-                title: `${command.help.name} ${command.help.usage}`,
-                description: command.help.description,
-                fields: [
-                    {
-                        name: "» Permission Level",
-                        value: `${command.conf.level} (\`${command.permLevel.name}\`)`,
-                        inline: true
-                    },
-                    {
-                        name: "» Category",
-                        value: this.toTitleCase(command.help.category),
-                        inline: true
-                    },
-                    {
-                        name: "» Aliases",
-                        value: command.conf.aliases.length > 0 ? command.conf.aliases.map(a => this.client.config.prefix + a).join(", ") : "None.",
-                        inline: true
-                    },
-                    {
-                        name: "» Cooldown",
-                        value: ms(command.conf.cooldown, { verbose: true }),
-                        inline: true
-                    },
-                    {
-                        name: "» Staff Only",
-                        value: command.conf.level > 2 ? "Yes." : "No.",
-                        inline: true
-                    }
-                ]
-            } }).catch(() => super.error("You have direct messages disabled."));
+            return;
         }
-    }
 
-    // Used to remove multiple instances of the same item in arrays
-    filterRepeats(array) {
-        return Array.from(new Set(array));
-    }
+        // If argument is a valid command...
+        if (categories.length > 1 && commands.exists(command => command.help.name === args[0])) {
+            // Fetch the command
+            const command = commands.find(cmd => cmd.help.name === args[0]);
 
-    // Set the first letter of every word to uppercase
-    toTitleCase(string) {
-        return string.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+            // Send the user the command data
+            message.channel.send({ embed: {
+                title: `Command Help: ${command.help.name}`,
+                description: `\`[param]\` - Optional\n\`<parm>\` - Required\n**» Description**\n${command.help.description}\n**» Usage**\n!${command.help.name} ${command.help.usage}\n**» Permission Level**\n${command.conf.level} (${command.permLevel.name})`
+            } });
+
+            return;
+        }
+
+        // If user only has access to 1 category...
+        if (categories.length === 1) {
+            // Send the user a list of all commands
+            message.channel.send({ embed: {
+                title: "Commands List",
+                description: commands.map(command => `\`${command.help.name + " ".repeat(spacing - command.help.name.length)}|\` ${command.help.description}`).join("\n")
+            } });
+        // If user has access to more than 1 category...
+        } else {
+            message.channel.send({ embed: {
+                title: "Commands List",
+                description: `**Pick from one of the following categories:**\n${categories.map(category => `!help ${category}`).join("\n")}`
+            } });
+        }
     }
 };

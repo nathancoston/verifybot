@@ -6,7 +6,7 @@ module.exports = class Perms extends Base {
         super(client, {
             name: "perms",
             description: "Edits a user's permissions. Use `perms list` to get a list of all available permissions.",
-            usage: "perms <list|give|revoke|reset> <user> <permission> <channel(s)>",
+            usage: "<list|give|revoke|reset> <user> <permission> <channel(s)>",
             category: "administrative",
             permLevel: 5 
         });
