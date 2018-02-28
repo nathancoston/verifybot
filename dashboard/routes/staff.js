@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const ms = require("pretty-ms");
 const { Router } = require("express");
 
@@ -285,7 +284,7 @@ router.post("/admin/announcement", checkAuth, async (req, res) => {
     // Fetch announcements channel
     const channel = client.channels.find("name", client.config.channels.announcements);
     // Create a new embed
-    const embed = new MessageEmbed();
+    const embed = channel.buildEmbed();
     // Fetch the user
     const member = await client.guild.members.fetch(req.user.id);
 
@@ -299,7 +298,7 @@ router.post("/admin/announcement", checkAuth, async (req, res) => {
     const text = `${req.body.role === "none" ? "" : `${req.body.role} | `}A new announcement has been posted!`;
     
     // Post the announcement and redirect the user.
-    channel.send(text, { embed, disableEveryone: false }).then(() => res.redirect("/staff/admin?mode=success")).catch(() => res.redirect("/staff/admin?mode=error"));
+    embed.send({ content: text, disableEveryone: false }).then(() => res.redirect("/staff/admin?mode=success")).catch(() => res.redirect("/staff/admin?mode=error"));
 });
 
 // Export the router

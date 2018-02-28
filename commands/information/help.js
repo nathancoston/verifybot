@@ -28,6 +28,7 @@ module.exports = class Help extends Base {
 
             // Send the user a list of the commands in that category
             message.channel.send({ embed: {
+                color: 0x17a2b8,
                 title: `Command Category: \`${category}\``,
                 description: targets.map(command => `\`${command.help.name}\`\n${command.help.description}\nUsage: \`!${command.help.name} ${command.help.usage}\``).join("\n")
             } });
@@ -42,6 +43,7 @@ module.exports = class Help extends Base {
 
             // Send the user the command data
             message.channel.send({ embed: {
+                color: 0x17a2b8,
                 title: `Command Help: ${command.help.name}`,
                 description: `\`[param]\` - Optional\n\`<param>\` - Required\n**» Description**\n${command.help.description}\n**» Usage**\n!${command.help.name} ${command.help.usage}\n**» Permission Level**\n${command.conf.level} (${command.permLevel.name})`
             } });
@@ -53,12 +55,14 @@ module.exports = class Help extends Base {
         if (categories.length === 1) {
             // Send the user a list of all commands
             message.channel.send({ embed: {
+                color: 0x17a2b8,
                 title: "Commands List",
                 description: commands.map(command => `\`${command.help.name + " ".repeat(spacing - command.help.name.length)}|\` ${command.help.description}`).join("\n")
             } });
         // If user has access to more than 1 category...
         } else {
             message.channel.send({ embed: {
+                color: 0x17a2b8,
                 title: "Commands List",
                 description: `**Pick from one of the following categories:**\n${categories.map(category => `!help ${category}`).join("\n")}`
             } });

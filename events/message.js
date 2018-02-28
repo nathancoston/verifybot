@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const levels = require("../levels.json");
 
 const recentMessages = new Map();

@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const Base = require("../../base/Command.js");
 
 module.exports = class Userinfo extends Base {
@@ -27,10 +26,8 @@ module.exports = class Userinfo extends Base {
         const data = await this.client.query(`SELECT player_name, player_uuid FROM linked_accounts WHERE discord_id = '${user.id}';`);
 
         // Create a new embed
-        const embed = new MessageEmbed()
-            .setColor("#FFFFFF")
-            .setAuthor(user.tag, user.avatarURL())
-            .setFooter("VerifyBot User Information", this.client.user.avatarURL());
+        const embed = message.channel.buildEmbed(this.client.config.embedTemplate)
+            .setAuthor(user.tag, user.avatarURL());
 
         // Add fields
         embed.addField("» Name", user.username, true);
@@ -44,7 +41,7 @@ module.exports = class Userinfo extends Base {
         if (data.length > 0) embed.addField("» Minecraft UUID", data[0].player_uuid, true);
 
         // Send the embed
-        message.channel.send({ embed });
+        embed.send();
     }
 
     // Used to make dates easy to read

@@ -1,5 +1,4 @@
 const config = require("../config.json");
-const { MessageEmbed } = require("discord.js");
 
 module.exports = class {
     constructor(client) {
@@ -27,7 +26,7 @@ module.exports = class {
         if (newMessage.author.bot && action.action === "Message Edited") return;
 
         // Create an embed
-        const embed = new MessageEmbed()
+        const embed = new logs.buildEmbed()
             .setColor(action.color)
             .setAuthor(`${newMessage.member.displayName} (${newMessage.author.tag})`)
             .setTitle(`${action.action} in #${newMessage.channel.name}.`)
@@ -40,6 +39,6 @@ module.exports = class {
         } else embed.setDescription(newMessage.content);
 
         // Send the embed
-        logs.send(embed);
+        embed.send();
     }
 };

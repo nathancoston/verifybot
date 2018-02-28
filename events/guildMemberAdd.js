@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const config = require("../config.json");
 
 module.exports = class {
@@ -13,7 +12,7 @@ module.exports = class {
         if (!channel) return;
         
         // Create a new embed
-        const embed = new MessageEmbed()
+        const embed = new channel.buildEmbed(this.client.config.embedTemplate)
             .setColor([67, 181, 129])
             .setThumbnail(member.user.avatarURL({ size: 256, format: "png" }))
             .setDescription("<:joined:401925850846724106> | New member joined.")
@@ -30,10 +29,13 @@ module.exports = class {
         if (data[0]) embed.addField("» Minecraft UUID", data[0].player_uuid, true);
 
         // Send the embed
-        channel.send({ embed });
+        embed.send();
 
-        // If user was verified, update their nickname immediately.
-        if (data[0]) member.setNickname(data[0].player_name).catch(() => null);
+        // If user was verified, update their nickname immediately and give them a role.
+        if (data[0]) {
+            member.setNickname(data[0].player_name).catch(() => null);
+            member.roles.add(member.guild.roles.find("name", "Verified")).catch(() => null);
+        }
     }
 
     // Used to make dates easy to read

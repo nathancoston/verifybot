@@ -1,6 +1,5 @@
 const { Router } = require("express");
 
-const { MessageEmbed } = require("discord.js");
 const passport = require("passport");
 const ms = require("pretty-ms");
 const uuid = require("uuid/v4");
@@ -82,15 +81,14 @@ router.get("/", checkAuth, async (req, res) => {
             // If no channel found, return
             if (!channel) return;
             // Create a new embed
-            const embed = new MessageEmbed()
+            const embed = channel.buildEmbed(this.client.config.embedTemplate)
                 .setColor([67, 181, 129])
-                .setAuthor(`${accInfo.data.player_name} (${member.user.tag})`, member.user.avatarURL({ size: 256, format: "png" }))
+                .setAuthor(`${accInfo.data.player_name} (${member.user.tag})`, member.user.avatarURL({ size: 64, format: "png" }))
                 .setTitle("User Verified")
-                .setDescription(`${member.user.tag} verified their account as ${accInfo.data.player_name}.`)
-                .setTimestamp();
+                .setDescription(`${member.user.tag} verified their account as ${accInfo.data.player_name}.`);
 
             // Send the embed
-            channel.send({ embed });
+            embed.send();
         }
 
         return;

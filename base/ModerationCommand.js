@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const Command = require("./Command");
 
 /** 
@@ -129,14 +128,14 @@ class ModerationCommand extends Command {
         const previous = (await channel.messages.fetch({ limit: 1 })).filter(c => c.author.id === this.client.user.id);
         const caseNumber = (previous.size ? parseInt(previous.first().embeds[0].footer.text.split(" ")[1]) + 1 : 1) || 1;
 
-        const embed = new MessageEmbed()
+        const embed = channel.buildEmbed()
             .setColor(this.color)
             .setAuthor(`${this.executor.displayName} (${this.executor.user.tag})`, this.executor.user.displayAvatarURL({ size: 128, format: "png" }))
             .setDescription(`**User:** ${this.target.displayName} (${this.target.user.tag})\n**Action:** ${this.actionName}\n**Reason:** ${this.reason || `Awaiting moderator's input. Type \`!reason ${caseNumber} <reason>\` to set reason.`}`)
             .setFooter(`Case ${caseNumber}`)
             .setTimestamp();
 
-        const sent = channel.send({ embed });
+        const sent = embed.send();
         super.respond(`Operation executed on ${this.target.user.tag}.`);
         return sent;
     }

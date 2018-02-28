@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const config = require("../config.json");
 
 module.exports = class {
@@ -13,7 +12,7 @@ module.exports = class {
         if (!channel) return;
         
         // Create a new embed
-        const embed = new MessageEmbed()
+        const embed = channel.buildEmbed()
             .setColor([181, 67, 67])
             .setThumbnail(member.user.avatarURL({ size: 256, format: "png" }))
             .setDescription("<:left:401925867531665409> | Member left.")
@@ -26,7 +25,7 @@ module.exports = class {
         embed.addField("» User ID", member.id, true);
 
         // Send the embed
-        channel.send({ embed });
+        embed.send();
     }
 
     // Used to make dates easy to read

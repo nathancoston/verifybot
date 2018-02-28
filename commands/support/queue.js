@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const ms = require("pretty-ms");
 const Base = require("../../base/Command");
 
@@ -45,9 +44,7 @@ module.exports = class Queue extends Base {
         ];
 
         // Create a new embed
-        const embed = new MessageEmbed()
-            .setFooter("DiamondFire Support Queue")
-            .setTimestamp();
+        const embed = message.channel.buildEmbed(this.client.config.embedTemplate);
 
         // Find queue status
         let status = data[0];
@@ -82,6 +79,6 @@ module.exports = class Queue extends Base {
         embed.setDescription(status.details.replace(/{{count}}/g, queue.length) + players);
 
         // Send the embed
-        message.channel.send({ embed });
+        embed.send();
     }
 };

@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const Base = require("../../base/Command.js");
 
 module.exports = class Credits extends Base {
@@ -14,16 +13,13 @@ module.exports = class Credits extends Base {
 
     run(message) {
         // Create a new embed
-        const embed = new MessageEmbed()
-            .setColor(0xFFFFFF)
+        const embed = message.channel.buildEmbed(this.client.config.embedTemplate)
             .setThumbnail(this.client.user.avatarURL({ size: 128 }))
             .setAuthor("Credits")
             .setDescription("VerifyBot was developed by these 2 users:")
             .addField("» RedstoneDaedalus#2020 (268071134057070592)", "Bot Developer")
-            .addField("» Jeremaster#3655", "Minecraft Server Developer")
-            .setFooter(`Requested by ${message.author.tag}`)
-            .setTimestamp();
+            .addField("» Jeremaster#3655", "Minecraft Server Developer");
 
-        message.channel.send({ embed });
+        embed.send();
     }
 };
