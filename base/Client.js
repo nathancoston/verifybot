@@ -20,34 +20,56 @@ class CustomClient extends Client {
          * A collection of all of the bot's commands
          * @type {Discord.Collection}
          */
-        this.commands = new Collection();
+        Object.defineProperty(this, "commands", { value: new Collection() });
         /**
          * A collection of all of the bot's command aliases
          * @type {Discord.Collection}
          */
-        this.aliases = new Collection();
+        Object.defineProperty(this, "aliases", { value: new Collection() });
 
         /**
          * A collection of all of every user's verification attempts
          * @type {Discord.Collection}
          */
-        this.attempts = new Collection();
+        Object.defineProperty(this, "attempts", { value: new Collection() });
         /**
          * A collection of all of every user's verification cooldown times
          * @type {Discord.Collection}
          */
-        this.cooldowns = new Collection();
+        Object.defineProperty(this, "cooldowns", { value: new Collection() });
         /**
          * A collection of every user's verification tokens
          * @type {Discord.Collection}
          */
-        this.tokens = new Collection();
+        Object.defineProperty(this, "tokens", { value: new Collection() });
 
         /**
          * The bot's config data
          * @type {Object}
          */
-        this.config = {};
+        Object.defineProperty(this, "config", { value: clientOptions.config || {} });
+
+        /**
+         * The ID of the Discord server
+         * @type {String}
+         */
+        Object.defineProperty(this, "guildID", { value: clientOptions.guild });
+
+        if (clientOptions.sql) {
+            const connection = mysql.createConnection({
+                host: clientOptions.sql.host || "localhost",
+                user: clientOptions.sql.user || "root",
+                password: clientOptions.sql.password,
+                database: clientOptions.sql.db
+            });
+
+            connection.connect(err => {
+                if (err) throw err;
+
+                Object.defineProperty(this, "connection", { value: connection });
+                console.log("Connection established to sql database.");
+            });
+        }
 
         setInterval(async () => {
             // Fetch all verified users
@@ -76,42 +98,11 @@ class CustomClient extends Client {
     }
 
     /**
-     * Sets the config path used for the bot
-     * @param {String} path 
-     * @returns {CustomClient} The current client
+     * The Discord server
+     * @type {Discord.Guild}
      */
-    setConfig(path) {
-        this.config = require(`../${path}`);
-        
-        return this;
-    }
-
     get guild() {
-        return this.guilds.get(this.config.guild) || {};
-    }
-
-    /**
-     * Creates a mysql connection
-     * @param {String} user The user used
-     * @param {String} pass The password used
-     * @param {String} db The database used
-     * @returns {CustomClient} The current client
-     */
-    sql(user, pass, db) {
-        this.connection = mysql.createConnection({
-            host: "localhost",
-            user,
-            password: pass,
-            database: db,
-            port: 3306
-        });
-
-        this.connection.connect(err => {
-            if (err) throw err;
-            console.log("Connected to sql database.");
-        });
-
-        return this;
+        return this.guilds.get(this.guildID) || {};
     }
 
     /**

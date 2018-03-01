@@ -7,7 +7,7 @@ module.exports = class {
 
     async run(member) {
         // Find the joins channel
-        const channel = member.guild.channels.find("name", config.logs.joins);
+        const channel = member.guild.channels.find("name", config.channels.joins);
         // If no channel found, return
         if (!channel) return;
         
