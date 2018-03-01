@@ -54,7 +54,6 @@ module.exports = class {
             message.channel.send(`${message.author} | ❌ | You are using too many uppercase letters. Please limit it to around 5.`).then(m => m.delete({ timeout: 10000 }));
         }
         
-
         // Verify that message is a command
         if (message.content.indexOf(this.client.config.prefix) === -1) return;
 
@@ -68,17 +67,10 @@ module.exports = class {
         // Check if user is on cooldown
         if (cmd.cooldown.has(message.author.id)) return;
 
-        // Message flags
-        message.flags = args.filter(arg => arg.indexOf("-") === 0).map(arg => { //eslint-disable-line no-param-reassign
-            const index = args.indexOf(arg);
-            args.splice(index, 1);
-            return { flag: arg.slice(1), arg: args[index] };
-        });
-
         // Delete message containing command
         message.delete();
-        // Define command message
-        cmd.message = message;
+        // Append the message to the command
+        message.appendTo(cmd);
 
         // Throw error is permissions are too low
         if (userPerms.level < cmd.conf.level) return cmd.error(`Your permission level is too low to execute this command. You are permission level \`${userPerms.level}\` (**${userPerms.name}**) and this command required level \`${cmd.conf.level}\` (**${levels.perms.find(p => p.level === cmd.conf.level).name}**).`);

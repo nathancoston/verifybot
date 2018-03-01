@@ -12,10 +12,7 @@ module.exports = class {
         console.log(`${this.client.user.tag} has booted up successfully.`);
 
         // Activate dashboard
-        require("../dashboard/dashboard")(this.client); //eslint-disable-line global-require
-
-        // Set client properties
-        this.client.guild = this.client.guilds.get(this.client.config.guild);
+        require("../dashboard/dashboard")(this.client);
 
         try {
             // Fetch reboot info

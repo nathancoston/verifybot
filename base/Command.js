@@ -44,11 +44,6 @@ class Command {
         };
 
         /**
-         * The message used for the respond and error methods
-         * @type {Discord.Message}
-         */
-        this.message = null;
-        /**
          * The command's cooldown
          * @type {Set}
          */

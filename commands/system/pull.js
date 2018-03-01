@@ -17,7 +17,7 @@ module.exports = class Pull extends Command {
     async run(message) {
         try {
             // Execute pull on repository URL
-            const { stdout, stderror, error } = await exec(`git pull ${require("../../package.json").repository.url.split("+")[1]}`, { cwd: path.join(__dirname, "../../") }); //eslint-disable-line global-require
+            const { stdout, stderror, error } = await exec(`git pull ${require("../../package.json").repository.url.split("+")[1]}`, { cwd: path.join(__dirname, "../../") });
             // If error thrown, return error message
             if (error) return super.error("An unknown error occured whilst attempting to pull.");
 

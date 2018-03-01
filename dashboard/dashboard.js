@@ -69,9 +69,9 @@ function run(client) {
     app.set("templateDir", templateDir);
 
     // /staff route
-    app.use("/staff", require("./routes/staff")); //eslint-disable-line global-require
+    app.use("/staff", require("./routes/staff"));
     // / route
-    app.use("/", require("./routes/index")); //eslint-disable-line global-require
+    app.use("/", require("./routes/index"));
 
     // Listen on port 4040
     app.listen(4040);

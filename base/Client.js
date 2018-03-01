@@ -81,9 +81,13 @@ class CustomClient extends Client {
      * @returns {CustomClient} The current client
      */
     setConfig(path) {
-        this.config = require(`../${path}`); //eslint-disable-line global-require
+        this.config = require(`../${path}`);
         
         return this;
+    }
+
+    get guild() {
+        return this.guilds.get(this.config.guild) || {};
     }
 
     /**
@@ -122,20 +126,27 @@ class CustomClient extends Client {
             categories.forEach(category => {
                 // Fetch commands from the current category
                 readdir(`${path}/${category}/`, (err, commands) => {
+                    console.log(`Loading ${commands.length} commands from category ${category}...`);
+
                     // Run through every command in the current category
-                    commands.forEach(command => {
+                    commands.forEach(async command => {
+                        // Get start time
+                        const start = Date.now();
                         // Initialise the command
-                        const props = new (require(`../${path}/${category}/${command}`))(this); //eslint-disable-line global-require
+                        const props = new (require(`../${path}/${category}/${command}`))(this);
                         // Define the command's filepath
-                        props.conf.filepath = `${path}/${category}/${command}`;
-                        // Add the command to the commands collection
-                        this.commands.set(props.help.name, props);
+                        Object.defineProperty(props.conf, "filepath", { value: `${path}/${category}/${command}` });
                         
                         // If the command has an init function, run it
-                        if (props.init) props.init(this);
+                        if (props.init) await props.init(this);
 
                         // Run through every alias and add it to the collection
                         props.conf.aliases.forEach(alias => this.aliases.set(alias, props.help.name));
+
+                        // Register the command
+                        this.commands.set(props.help.name, props);
+
+                        console.log(`Loaded command ${props.help.name} in ${Date.now() - start}ms.`);
                     });
                 });
             });
@@ -155,7 +166,7 @@ class CustomClient extends Client {
             // Run through every event
             events.forEach(event => {
                 // Initialise the event
-                const props = new (require(`../${path}/${event}`))(this); //eslint-disable-line global-require
+                const props = new (require(`../${path}/${event}`))(this);
                 // Add an event emitter
                 super.on(event.split(".")[0], (...args) => props.run(...args));
 
