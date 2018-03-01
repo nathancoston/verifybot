@@ -1,7 +1,7 @@
 const { TextChannel, DMChannel, MessageEmbed, Message } = require("discord.js");
 const Command = require("../base/Command");
 
-TextChannel.prototype.buildEmbed = DMChannel.prototype.buildEmbed = function (data) {
+TextChannel.prototype.buildEmbed = DMChannel.prototype.buildEmbed = function (data = {}) {
     return Object.defineProperty(new MessageEmbed({ ...data, timestamp: data.timestamp ? new Date() : null } || {}), "channel", { value: this });
 };
 
