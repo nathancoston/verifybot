@@ -31,7 +31,7 @@ const questions = [
         type: "input",
         name: "credentials.sql.host",
         message: "Mysql Host: "
-    }
+    },
     {
         type: "input",
         name: "credentials.sql.db",
