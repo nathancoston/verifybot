@@ -16,7 +16,7 @@ module.exports = class {
         if ((message.content.startsWith(config.prefix) && (this.client.commands.has(message.content.split(config.prefix)[1].split(" ")[0]) || this.client.aliases.has(message.content.split(config.prefix)[1].split(" ")[0]))) || message.author.bot) return;
 
         // Create a new embed
-        const embed = new logs.buildEmbed()
+        const embed = logs.buildEmbed()
             .setColor([255, 100, 100])
             .setAuthor(`${message.member.displayName} (${message.author.tag})`)
             .setTitle(`Message deleted in #${message.channel.name}.`)
