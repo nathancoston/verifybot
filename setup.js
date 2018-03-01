@@ -29,18 +29,23 @@ const questions = [
     },
     {
         type: "input",
-        name: "credentials.mysql.db",
+        name: "credentials.sql.host",
+        message: "Mysql Host: "
+    }
+    {
+        type: "input",
+        name: "credentials.sql.db",
         message: "Mysql Database: "
     },
     {
         type: "input",
-        name: "credentials.mysql.user",
+        name: "credentials.sql.user",
         message: "Mysql User: "
     },
     {
         type: "input",
-        name: "credentials.mysql.pass",
-        message: "Mysql Pass: "
+        name: "credentials.sql.password",
+        message: "Mysql Password: "
     },
     {
         type: "input",
