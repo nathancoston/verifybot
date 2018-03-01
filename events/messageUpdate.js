@@ -26,7 +26,7 @@ module.exports = class {
         if (newMessage.author.bot && action.action === "Message Edited") return;
 
         // Create an embed
-        const embed = new logs.buildEmbed()
+        const embed = logs.buildEmbed()
             .setColor(action.color)
             .setAuthor(`${newMessage.member.displayName} (${newMessage.author.tag})`)
             .setTitle(`${action.action} in #${newMessage.channel.name}.`)

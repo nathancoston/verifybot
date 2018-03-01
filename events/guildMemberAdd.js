@@ -12,7 +12,7 @@ module.exports = class {
         if (!channel) return;
         
         // Create a new embed
-        const embed = new channel.buildEmbed(this.client.config.embedTemplate)
+        const embed = channel.buildEmbed(this.client.config.embedTemplate)
             .setColor([67, 181, 129])
             .setThumbnail(member.user.avatarURL({ size: 256, format: "png" }))
             .setDescription("<:joined:401925850846724106> | New member joined.")
