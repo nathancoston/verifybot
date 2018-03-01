@@ -33,8 +33,12 @@ module.exports = class {
 
         // If user was verified, update their nickname immediately and give them a role.
         if (data[0]) {
-            member.setNickname(data[0].player_name).catch(() => null);
-            member.roles.add(member.guild.roles.find("name", "Verified")).catch(() => null);
+            member.setNickname(`${data[0].player_name} (Pending)`).catch(() => null);
+            member.send("Welcome back! You will be automatically reverified in 3 minutes.").catch(() => null);
+
+            setTimeout(() => {
+                if (!member.roles.exists("name", "Verified")) member.roles.add(member.guild.roles.find("name", "Verified")).then(() => member.send("You have been verified! You can now chat as much as you want")).catch(() => null);
+            }, 180000);
         }
     }
 
