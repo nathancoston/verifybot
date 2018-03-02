@@ -26,16 +26,41 @@
 
     <div class="container mt-3">
         <% if (mode === "success") { %>
-            <h1 class="text-dark"><span class="fa fa-check-circle"></span> Success!</h1>
+            <h1><span class="fa fa-check-circle"></span> Success!</h1>
         <% } else if (mode === "error") { %>
-            <h1 class="text-primary"><span class="fa fa-times-circle"></span> Something went wrong...</h1>
+            <h1><span class="fa fa-times-circle"></span> Something went wrong...</h1>
         <% } %>
+
         <h1>Bot Stats</h1>
         <ul>
             <li><b><%= client.guild.memberCount %></b> total members.</li>
             <li><b><%= client.guild.members.filter(m => m.roles.exists("name", "Verified")).size %></b> verified members.</li>
             <li>VerifyBot has been online for <b><%= data.ms(client.uptime, { verbose: true, secDecimalDigits: 0 }) %></b>.</li>
         </ul>
+
+        <h1>Nodes</h1>
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Last Updated</th>
+                    <th scope="col">Players</th>
+                </tr>
+            </thead>
+            <tbody>
+            <%- data.nodes.list.map(({ node, online, updated, players }) => {
+                return `
+                <tr>
+                    <td>${node}</td>
+                    <td>${online ? "Online" : "Offline"}</td>
+                    <td>${data.ms(Date.now() - updated, { verbose: true, secDecimalDigits: 0 })} ago</td>
+                    <td>${!online || players === 0 ? "None" : players}</td>
+                </tr>
+                `;
+            }).join("\n") %>
+        </tbody>
+        </table>
 
         <h1>Admin Controls</h1>
         <ul class="nostyle">

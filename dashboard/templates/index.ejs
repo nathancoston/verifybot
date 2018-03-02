@@ -27,11 +27,8 @@
 
             <% if (!client.guild.members.has(user.id)) { %>
                 You aren't on the Discord server! <a href="https://discord.gg/pDHBbBD" class="btn btn-blurple">Join</a> <a href="/" class="btn btn-blurple">Reload</a>
-            <% } else if (!perms.level > 2) { %>
-            Your account is already verified!
-            <a href="/staff" class="btn btn-blurple">Go to Staff Panel</a>
-            <% } else if (!perms.level > 1) { %>
-            Your account is already verified!
+            <% } else if (perms.level > 1) { %>
+            Your account is already verified! <%- perms.level > 2 ? `<a href="/staff" class="btn btn-blurple">Go to Staff Panel</a>` : "" %>
             <% } else { %>
             <form method="post" class="text-left">
                 <div class="form-group">
@@ -47,6 +44,8 @@
             </form>
             <% } %>
         </div>
+
+        <%= perms.level %>
 
         <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">

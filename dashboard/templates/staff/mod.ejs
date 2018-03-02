@@ -28,16 +28,16 @@
 
     <div class="container mt-3">
         <% if (mode === "success") { %>
-            <h1 class="text-dark"><span class="fa fa-check-circle"></span> Success!</h1>
+            <h1><span class="fa fa-check-circle"></span> Success!</h1>
         <% } else if (mode === "error") { %>
-            <h1 class="text-primary"><span class="fa fa-times-circle"></span> Something went wrong...</h1>
+            <h1><span class="fa fa-times-circle"></span> Something went wrong...</h1>
         <% } %>
 
         <h1>Recent Reports</h1>
         <ul class="nostyle">
             <li>
                 <span class="text-muted">Please note that this does not show all reports, nor does it manage to correctly find the reason for them.</span>
-                <table class="table table-hover">
+                <table class="table table-dark table-striped">
                     <thead>
                         <tr>
                             <th scope="col">Reporter</th>

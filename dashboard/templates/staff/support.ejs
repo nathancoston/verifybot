@@ -30,10 +30,11 @@
 
     <div class="container mt-3">
         <% if (mode === "success") { %>
-            <h1 class="text-dark"><span class="fa fa-check-circle"></span> Success!</h1>
+            <h1><span class="fa fa-check-circle"></span> Success!</h1>
         <% } else if (mode === "error") { %>
-            <h1 class="text-dark"><span class="fa fa-times-circle"></span> Something went wrong...</h1>
+            <h1><span class="fa fa-times-circle"></span> Something went wrong...</h1>
         <% } %>
+        
         <h1>Support Stats</h1>
         <ul>
             <% if (data.sessions.length > 0) { %>

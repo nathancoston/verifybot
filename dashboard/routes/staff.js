@@ -183,6 +183,9 @@ router.get("/admin", checkAuth, async (req, res) => {
     // Fetch wether or not the server is on cooldown
     const onLockdown = chatChannels.filter(c => c.permissionsFor(verified).has("SEND_MESSAGES")).size === 0;
 
+    // Fetch node data
+    const nodes = await (require("../../methods/restricted/fetchNodeData"))(client);
+
     // Render file
     res.render(`${templateDir}/staff/admin.ejs`, {
         client,
@@ -192,7 +195,8 @@ router.get("/admin", checkAuth, async (req, res) => {
         mode: req.query.mode,
         data: {
             ms,
-            onLockdown
+            onLockdown,
+            nodes
         }
     });
 });
