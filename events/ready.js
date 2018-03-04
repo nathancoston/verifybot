@@ -40,9 +40,8 @@ module.exports = class {
             // If no channel found, return
             if (!channel) return;
             if (nodesOnline.length > online.length) {
-                const nodes = online.map(({ node }) => node);
-                const node = nodesOnline.find(n => !nodes.includes(n));
-                const message = `${`Node ${node}`} crashed! Check ${channel.toString()} for more information.`;
+                const crashed = nodesOnline.filter(n => !online.map(({ node }) => node).includes(n));
+                const message = `${crashed.length > 1 ? `Nodes ${crashed.slice(0, crashed.length - 1).join(", ")} and ${crashed.pop()}` : `Node ${crashed[0]}`} crashed! Check ${channel.toString()} for further information.`;
 
                 this.client.guild.members.filter(member => member.roles.exists("name", "Developer")).forEach(member => {
                     member.send(message).catch(() => null);
