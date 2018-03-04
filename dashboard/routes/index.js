@@ -81,7 +81,7 @@ router.get("/", checkAuth, async (req, res) => {
             // If no channel found, return
             if (!channel) return;
             // Create a new embed
-            const embed = channel.buildEmbed(this.client.config.embedTemplate)
+            const embed = channel.buildEmbed(client.config.embedTemplate)
                 .setColor([67, 181, 129])
                 .setAuthor(`${accInfo.data.player_name} (${member.user.tag})`, member.user.avatarURL({ size: 64, format: "png" }))
                 .setTitle("User Verified")

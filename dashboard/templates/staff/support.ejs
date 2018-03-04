@@ -40,7 +40,8 @@
             <% if (data.sessions.length > 0) { %>
             <li><b><%= data.sessions.length %></b> total sessions.</li>
             <li><b><%= Array.from(new Set(data.sessions.map(s => s.name))).length %></b> individual players helped.</li>
-            <li><b><%= data.sessions.filter(s => new Date(new Date().setDate(new Date().getDate() - 30)) - s.time > 0).length %></b> sessions this month.</li>
+            <li><b><%= data.month.length %></b> sessions this month.</li>
+            <li><b><%= data.ms(data.sessions.reduce((t, s) => t += s.duration, 0), { verbose: true, secDecimalDigits: 0 }) %></b> of session time.</li>
         <% } else { %>
             No sessions completed.
         <% } %>

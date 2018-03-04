@@ -7,7 +7,7 @@ TextChannel.prototype.buildEmbed = DMChannel.prototype.buildEmbed = function (da
 
 MessageEmbed.prototype.send = function (options = {}) {
     if (!this.channel || !(this.channel instanceof TextChannel || this.channel instanceof DMChannel)) return Promise.reject("Invalid channel.");
-    this.channel.send(options.content || "", { embed: this, ...options });
+    return this.channel.send(options.content || "", { embed: this, ...options });
 };
 
 Message.prototype.appendTo = function (command) {

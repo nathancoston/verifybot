@@ -43,7 +43,7 @@ router.get("/support", checkAuth, async (req, res) => {
         user: req.user,
         perms,
         mode: req.query.mode,
-        data: await fetchSupportData(client, req.user.id)
+        data: await { ms, ...await fetchSupportData(client, req.user.id) }
     });
 });
 

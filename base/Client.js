@@ -63,12 +63,8 @@ class CustomClient extends Client {
                 database: clientOptions.sql.db
             });
 
-            connection.connect(err => {
-                if (err) throw err;
-
-                Object.defineProperty(this, "connection", { value: connection });
-                console.log("Connection established to sql database.");
-            });
+            connection.connect();
+            this.connection = connection;
         }
 
         setInterval(async () => {
@@ -82,7 +78,7 @@ class CustomClient extends Client {
                 // Fetch their profile data
                 const profile = data.find(entry => entry.discord_id === user.id);
                 // If no profile exists, unverify them
-                if (!profile) return user.removeRole(user.roles.find("name", "Verified")).catch(() => null).then(() => user.setNickname("").then(() => user.send("You have been unverified - this is most likely because you weren't verified by the bot, meaning you aren't registered in the database.")));
+                if (!profile) return user.roles.remove(user.roles.find("name", "Verified")).catch(() => null).then(() => user.setNickname("").then(() => user.send("You have been unverified - this is most likely because you weren't verified by the bot, meaning you aren't registered in the database.")));
 
                 // If nickname is out of sync, set it to their player name
                 if (profile.player_name !== user.displayName) return user.setNickname(profile.player_name);
