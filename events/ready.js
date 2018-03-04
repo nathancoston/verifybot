@@ -39,18 +39,31 @@ module.exports = class {
             const channel = this.client.guild.channels.find("name", this.client.config.channels.nodes);
             // If no channel found, return
             if (!channel) return;
-
-            const node1 = list.find(data => data.node === 1);
-            const node2 = list.find(data => data.node === 2);
-            const node3 = list.find(data => data.node === 3);
-
             if (nodesOnline.length > online.length) {
                 const nodes = online.map(({ node }) => node);
                 const node = nodesOnline.find(n => !nodes.includes(n));
-                const message = `${node ? `Node ${node}` : "**All nodes**"} crashed! Check ${channel.toString()} for more information.`;
+                const message = `${`Node ${node}`} crashed! Check ${channel.toString()} for more information.`;
 
                 this.client.guild.members.filter(member => member.roles.exists("name", "Developer")).forEach(member => {
                     member.send(message).catch(() => null);
+                });
+            }
+
+            if (offline.length >= 1) {
+                this.client.user.setPresence({
+                    activity: {
+                        name: offline.length > 1 ? `Nodes ${offline.map(({ node }) => node).offline.slice(0, offline.length - 1).join(", ")} and ${offline[offline.length - 1].node} offline` : `Node ${offline[0].node} offline`,
+                        type: 0
+                    },
+                    status: "dnd"
+                });
+            } else {
+                this.client.user.setPresence({
+                    activity: {
+                        name: `With ${list.reduce((out, data) => data.players + out, 0)} players`,
+                        type: 0
+                    },
+                    status: "online"
                 });
             }
 
@@ -59,10 +72,9 @@ module.exports = class {
             const embed = channel.buildEmbed()
                 .setColor(online.length < 3 ? "RED" : "GREEN")
                 .setAuthor("Node Report")
-                .setDescription(`${offline.length === 0 ? "No" : offline.length} node${offline.length === 1 ? "" : "s"} offline.`)
-                .addField("Node 1", `${node1.online ? `Online with ${node1.players} players` : `Offline for ${ms(Date.now() - node1.updated, { verbose: true, secDecimalDigits: 0 })}`}`)
-                .addField("Node 2", `${node2.online ? `Online with ${node2.players} players` : `Offline for ${ms(Date.now() - node2.updated, { verbose: true, secDecimalDigits: 0 })}`}`)
-                .addField("Node 3", `${node3.online ? `Online with ${node3.players} players` : `Offline for ${ms(Date.now() - node3.updated, { verbose: true, secDecimalDigits: 0 })}`}`);
+                .setDescription(`${offline.length === 0 ? "No" : offline.length} node${offline.length === 1 ? "" : "s"} offline.`);
+
+            list.map(data => embed.addField(`Node ${data.node}`, `${data.online ? `Online with ${data.players === 0 ? "No" : data.players} player${data.players === 1 ? "" : "s"}` : `Offline for ${ms(Date.now() - data.updated, { verbose: true, secDecimalDigits: 0 })}`}`));
 
             const collection = await channel.messages.fetch({ limit: 1 });
             

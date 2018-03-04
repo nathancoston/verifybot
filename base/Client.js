@@ -83,13 +83,6 @@ class CustomClient extends Client {
                 // If nickname is out of sync, set it to their player name
                 if (profile.player_name !== user.displayName) return user.setNickname(profile.player_name);
             });
-            
-            // Fetch server stats
-            const body = await get("https://api.mcsrvstat.us/1/mcdiamondfire.com");
-            // If no body text found, return
-            if (!body.text) return;
-            // Fetch online players
-            this.user.setActivity(`with ${JSON.parse(body.text).players.online} players`);
         }, 900000);
     }
 
