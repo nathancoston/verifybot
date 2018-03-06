@@ -54,7 +54,7 @@
                 <tr>
                     <td>${node}</td>
                     <td>${online ? "Online" : "Offline"}</td>
-                    <td>${data.ms(Date.now() - updated, { verbose: true, secDecimalDigits: 0 })} ago</td>
+                    <td>${updated > Date.now() ? "Unable to fetch" : `${data.ms(Date.now() - updated, { verbose: true, secDecimalDigits: 0 })} ago`}</td>
                     <td>${!online || players === 0 ? "None" : players}</td>
                 </tr>
                 `;
