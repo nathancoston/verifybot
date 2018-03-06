@@ -28,7 +28,6 @@
         <article>
             <pre class="prettyprint source linenums"><code>const { Collection, Client } = require("discord.js");
 const { readdir } = require("fs");
-const { get } = require("snekfetch");
 const mysql = require("mysql");
 const levels = require("../levels.json");
 
@@ -48,34 +47,52 @@ class CustomClient extends Client {
          * A collection of all of the bot's commands
          * @type {Discord.Collection}
          */
-        this.commands = new Collection();
+        Object.defineProperty(this, "commands", { value: new Collection() });
         /**
          * A collection of all of the bot's command aliases
          * @type {Discord.Collection}
          */
-        this.aliases = new Collection();
+        Object.defineProperty(this, "aliases", { value: new Collection() });
 
         /**
          * A collection of all of every user's verification attempts
          * @type {Discord.Collection}
          */
-        this.attempts = new Collection();
+        Object.defineProperty(this, "attempts", { value: new Collection() });
         /**
          * A collection of all of every user's verification cooldown times
          * @type {Discord.Collection}
          */
-        this.cooldowns = new Collection();
+        Object.defineProperty(this, "cooldowns", { value: new Collection() });
         /**
          * A collection of every user's verification tokens
          * @type {Discord.Collection}
          */
-        this.tokens = new Collection();
+        Object.defineProperty(this, "tokens", { value: new Collection() });
 
         /**
          * The bot's config data
          * @type {Object}
          */
-        this.config = {};
+        Object.defineProperty(this, "config", { value: clientOptions.config || {} });
+
+        /**
+         * The ID of the Discord server
+         * @type {String}
+         */
+        Object.defineProperty(this, "guildID", { value: clientOptions.guild });
+
+        if (clientOptions.sql) {
+            const connection = mysql.createConnection({
+                host: clientOptions.sql.host || "localhost",
+                user: clientOptions.sql.user || "root",
+                password: clientOptions.sql.password,
+                database: clientOptions.sql.db
+            });
+
+            connection.connect();
+            this.connection = connection;
+        }
 
         setInterval(async () => {
             // Fetch all verified users
@@ -88,58 +105,20 @@ class CustomClient extends Client {
                 // Fetch their profile data
                 const profile = data.find(entry => entry.discord_id === user.id);
                 // If no profile exists, unverify them
-                if (!profile) return user.removeRole(user.roles.find("name", "Verified")).catch(() => null).then(() => user.setNickname("").then(() => user.send("You have been unverified - this is most likely because you weren't verified by the bot, meaning you aren't registered in the database.")));
+                if (!profile) return user.roles.remove(user.roles.find("name", "Verified")).catch(() => null).then(() => user.setNickname("").then(() => user.send("You have been unverified - this is most likely because you weren't verified by the bot, meaning you aren't registered in the database.")));
 
                 // If nickname is out of sync, set it to their player name
                 if (profile.player_name !== user.displayName) return user.setNickname(profile.player_name);
             });
-            
-            // Fetch server stats
-            const body = await get("https://api.mcsrvstat.us/1/mcdiamondfire.com");
-            // If no body text found, return
-            if (!body.text) return;
-            // Fetch online players
-            this.user.setActivity(`with ${JSON.parse(body.text).players.online} players`);
         }, 900000);
     }
 
     /**
-     * Sets the config path used for the bot
-     * @param {String} path 
-     * @returns {CustomClient} The current client
+     * The Discord server
+     * @type {Discord.Guild}
      */
-    setConfig(path) {
-        this.config = require(`../${path}`);
-        
-        return this;
-    }
-
     get guild() {
-        return this.guilds.get(this.config.guild) || {};
-    }
-
-    /**
-     * Creates a mysql connection
-     * @param {String} user The user used
-     * @param {String} pass The password used
-     * @param {String} db The database used
-     * @returns {CustomClient} The current client
-     */
-    sql(user, pass, db) {
-        this.connection = mysql.createConnection({
-            host: "localhost",
-            user,
-            password: pass,
-            database: db,
-            port: 3306
-        });
-
-        this.connection.connect(err => {
-            if (err) throw err;
-            console.log("Connected to sql database.");
-        });
-
-        return this;
+        return this.guilds.get(this.guildID) || {};
     }
 
     /**
@@ -154,18 +133,27 @@ class CustomClient extends Client {
             categories.forEach(category => {
                 // Fetch commands from the current category
                 readdir(`${path}/${category}/`, (err, commands) => {
+                    console.log(`Loading ${commands.length} commands from category ${category}...`);
+
                     // Run through every command in the current category
-                    commands.forEach(command => {
+                    commands.forEach(async command => {
+                        // Get start time
+                        const start = Date.now();
                         // Initialise the command
                         const props = new (require(`../${path}/${category}/${command}`))(this);
                         // Define the command's filepath
-                        props.conf.filepath = `${path}/${category}/${command}`;
+                        Object.defineProperty(props.conf, "filepath", { value: `${path}/${category}/${command}` });
                         
                         // If the command has an init function, run it
-                        if (props.init) props.init(this);
+                        if (props.init) await props.init(this);
 
                         // Run through every alias and add it to the collection
                         props.conf.aliases.forEach(alias => this.aliases.set(alias, props.help.name));
+
+                        // Register the command
+                        this.commands.set(props.help.name, props);
+
+                        console.log(`Loaded command ${props.help.name} in ${Date.now() - start}ms.`);
                     });
                 });
             });
@@ -266,7 +254,7 @@ module.exports = CustomClient;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 28 2018 17:03:28 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Mar 06 2018 09:27:34 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

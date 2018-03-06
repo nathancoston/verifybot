@@ -1,6 +1,5 @@
 const { Collection, Client } = require("discord.js");
 const { readdir } = require("fs");
-const { get } = require("snekfetch");
 const mysql = require("mysql");
 const levels = require("../levels.json");
 
