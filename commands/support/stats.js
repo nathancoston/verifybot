@@ -1,6 +1,7 @@
 const ms = require("pretty-ms");
 const Base = require("../../base/Command");
 const fetchSupportData = require("../../methods/restricted/fetchSupportDataFromName");
+const { escapeMarkdown } = require("discord.js");
 
 module.exports = class Stats extends Base {
     constructor(client) {
@@ -17,7 +18,7 @@ module.exports = class Stats extends Base {
         // Fetch support data
         const data = await fetchSupportData(this.client, args[0] || message.member.displayName);
         // If no data returned, throw an error
-        if (!data || !data.sessions[0]) return super.error(`No sessions found for user ${args[0] || message.member.displayName}.`);
+        if (!data || !data.sessions[0]) return super.error(`No sessions found for user ${escapeMarkdown(args[0] || message.member.displayName)}.`);
 
         // Attempt to find the target
         const target = message.guild.members.find("displayName", data.sessions[0].staff);
