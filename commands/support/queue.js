@@ -1,4 +1,3 @@
-const ms = require("pretty-ms");
 const Base = require("../../base/Command");
 
 module.exports = class Queue extends Base {
@@ -52,8 +51,6 @@ module.exports = class Queue extends Base {
             if (queue.length >= s.min) status = s;
         });
 
-        // Parse maximum spacing to make text sorted evenly
-        const spacing = queue.map(c => c.player).reduce((out, p) => Math.max(p.length, out), 1);
         // Create an empty array of entries
         let players = [];
 
@@ -63,10 +60,8 @@ module.exports = class Queue extends Base {
             players = queue.sort((a, b) => a.enter_time - b.enter_time).map((entry, index) => {
                 // Create a position string
                 const pos = index >= 9 ? index + 1 : `0${index + 1}`;
-                // Fetch the time spent in queue
-                const duration = new Date() - entry.enter_time;
                 // Return <position> <player> :: Waited <duration>
-                return `${pos}) ${entry.player + " ".repeat(spacing - entry.player.length)} :: Waited ${ms(duration, { secDecimalDigits: 0, verbose: true })}.`;
+                return `${pos}) ${entry.player}`;
             });
         }
 

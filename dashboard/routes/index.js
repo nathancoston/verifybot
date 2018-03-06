@@ -1,4 +1,6 @@
-const { Router } = require("express");
+const {
+    Router
+} = require("express");
 
 const passport = require("passport");
 const ms = require("pretty-ms");
@@ -14,14 +16,19 @@ const router = Router();
 router.get("/login", passport.authenticate("discord"));
 
 // GET /callback
-router.get("/callback", passport.authenticate("discord", { failureRedirect: "/error" }), (req, res) => {
+router.get("/callback", passport.authenticate("discord", {
+    failureRedirect: "/error"
+}), (req, res) => {
     res.redirect("/");
 });
 
 // GET /error
 router.get("/error", (req, res) => {
     // Fetch variables
-    const { client, templateDir } = fetchVariables(req);
+    const {
+        client,
+        templateDir
+    } = fetchVariables(req);
 
     res.render(`${templateDir}/autherror.ejs`, {
         client,
@@ -40,156 +47,221 @@ router.get("/logout", (req, res) => {
 // GET /
 router.get("/", checkAuth, async (req, res) => {
     // Fetch variables
-    const { client, templateDir } = fetchVariables(req);
-    // Create a data object to be passed to the client
-    const data = { error: null, message: null };
+    const {
+        client,
+        templateDir
+    } = fetchVariables(req);
 
-    // Define data values
-    if (req.query.error) data.error = req.query.error;
-    if (req.query.message) data.message = req.query.message;
-
-    // If verification token is present in queries...
-    if (req.query.token) {
-        // Load confirmation screen.
-        res.render(`${templateDir}/confirm.ejs`, {
+    // If user is not on the guild, prompt them to join
+    if (!client.guild.members.has(req.user.id)) {
+        return res.render(`${templateDir}/index.ejs`, {
             client,
-            data: client.tokens.get(req.user.id),
-            user: req.user
+            user: req.user,
+            data: {
+                message: "You aren't on the DiamondFire Discord server! <a href=\"https://discord.gg/pDHBbBD\" class=\"btn btn-blurple\">Join</a>"
+            }
         });
-
-        // If user has entry in tokens collection...
-        if (client.tokens.has(req.user.id)) {
-            // Fetch account info from token
-            const accInfo = client.tokens.get(req.user.id);
-            // Fetch member from guild
-            const member = client.guild.members.get(req.user.id);
-            // Throw 404 if member is invalid
-            if (!member) return res.status(404);
-
-            // Attempt to set nickname
-            member.setNickname(accInfo.data.player_name).catch(() => null);
-            // Attempt to add Verified role
-            member.roles.add(member.guild.roles.find("name", "Verified")).catch(() => null);
-            // Remove user's token info from collection
-            client.tokens.delete(req.user.id);
-
-            // Update discord ID and remove secret key
-            client.connection.query(`UPDATE linked_accounts SET discord_id = ${req.user.id}, secret_key = null WHERE player_name = '${accInfo.data.player_name.replace(/[^a-z_\d]/ig)}'`);
-
-            // Find the verification logs channel
-            const channel = member.guild.channels.find("name", client.config.channels.verification);
-            // If no channel found, return
-            if (!channel) return;
-            // Create a new embed
-            const embed = channel.buildEmbed(client.config.embedTemplate)
-                .setColor([67, 181, 129])
-                .setAuthor(`${accInfo.data.player_name} (${member.user.tag})`, member.user.avatarURL({ size: 64, format: "png" }))
-                .setTitle("User Verified")
-                .setDescription(`${member.user.tag} verified their account as ${accInfo.data.player_name}.`);
-
-            // Send the embed
-            embed.send();
-        }
-
-        return;
     }
 
-    // Render verification screen
-    res.render(`${templateDir}/index.ejs`, {
-        client,
-        data,
-        path: req.path,
-        auth: true,
-        user: req.user,
-        perms: await client.permLevel(req.user.id)
+    // Fetch user permissions
+    const perms = await client.permLevel(req.user.id);
+
+    // If user is verified, tell them that they are already verified
+    if (perms.level >= 1) {
+        return res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: `You are already verified!${perms.level >= 2 ? " <a href=\"/staff\" class=\"btn btn-blurple\">Go to staff panel</a>" : ""}`
+            }
+        });
+    }
+
+    // If key is invalid, give them instructions
+    if (!req.query.key) {
+        return res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: `
+            <div class="container text-left">
+                <h3>How do I verify myself?</h3>
+                <ol>
+                    <li>Join the Minecraft server
+                        <b>mcdiamondfire.com</b>.</li>
+                    <li>Type
+                        <b>/verify</b> in the chat.</li>
+                    <li>Click on the <b>link</b> sent to you.</li>
+                    <li><b>Confirm</b> verification by clicking the text sent to you through Discord direct message.</li>
+                </ol>
+                <h3>What does verification do?</h3>
+                <ul>
+                    <li>You can
+                        <b>chat</b> with other players.</li>
+                    <li>You can
+                        <b>react</b> to messages.</li>
+                    <li>You can
+                        <b>speak</b> with other players in voice channels.</li>
+                </ul>
+                <h5>Be careful, you only have <b>10 attempts</b> at verification!</h5>
+            </div>`
+            }
+        });
+    }
+
+    // Fetch the user's cooldown
+    const cooldown = client.cooldowns.get(req.user.id);
+    // If user is on cooldown, tell them they can't verify yet
+    if (cooldown && cooldown > Date.now()) {
+        return res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: `You are currently on cooldown. Please wait ${ms(cooldown - Date.now(), { verbose: true, secDecimalDigits: 0 })} before trying to verify again.`
+            }
+        });
+    }
+
+    // Fetch data
+    const data = await client.query(`SELECT * FROM linked_accounts WHERE secret_key = '${req.query.key ? req.query.key.replace(/[^a-z\d]/ig, "") : ""}';`);
+    // Fetch the first entry
+    const profile = data[0];
+
+    // Fetch the user
+    const user = await client.guild.members.fetch(req.user.id);
+
+    // If no profile was found for the specified key, send them to a link to get instruction
+    if (!profile) {
+        const attempts = (client.attempts.get(req.user.id) || 0) + 1;
+
+        const expiration = attempts < 7 ? 60000 : 600000;
+        client.cooldowns.set(req.user.id, Date.now() + expiration);
+
+        if (attempts > 10) {
+            user.ban({ reason: "Too many attempts at verification." });
+
+            return res.render(`${templateDir}/index.ejs`, {
+                client,
+                user: req.user,
+                data: {
+                    message: "You have used up all of your 10 attempts at verification. You have been permanently banned from the Discord server."
+                }
+            });
+        }
+
+        return res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: `Your secret key is invalid. Please wait for ${ms(cooldown, { verbose: true, secDecimalDigits: 0 })} until attempting to verify again. (You have ${10 - attempts === 0 ? "No" : 10 - attempts} more attempt${attempts === 9 ? "" : "s"})`
+            }
+        });
+    }
+
+    // Remove the secret key from the user's profile
+    await client.query(`UPDATE linked_accounts SET secret_key = NULL WHERE secret_key = '${profile.secret_key}';`);
+
+    // Generate a token
+    const token = uuid();
+
+    // Send them a message
+    user.send({
+        embed: {
+            description: `Click [here](http://localhost:4040/confirm?token=${token}) to verify your account! This link will expire in 3 minutes.`,
+            url: "http://verify.mcdiamondfire.com",
+            color: 7506394,
+            timestamp: new Date(),
+            footer: {
+                icon_url: "https://cdn.discordapp.com/embed/avatars/0.png",
+                text: "VerifyBot"
+            },
+            author: {
+                name: "Confirm Verification"
+            }
+        }
+    }).then(() => {
+        res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: "Check your private messages on Discord!"
+            }
+        });
+
+        // Add the generated token to the collection
+        client.tokens.set(token, { ...profile,
+            discord_id: req.user.id
+        });
+
+        // Delete it after 3 minutes
+        setTimeout(() => client.tokens.delete(token), 180000);
+    }).catch(() => {
+        res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: "Please enable direct messages."
+            }
+        });
     });
 });
 
-// POST /
-router.post("/", checkAuth, async (req, res) => {
+router.get("/confirm", checkAuth, async (req, res) => {
     // Fetch variables
-    const { client } = fetchVariables(req);
-    // Fetch user perms
-    const perms = await client.permLevel(req.user.id);
-    // Fetch guild member
-    const member = await client.guild.members.fetch(req.user.id);
-
-    // If no member is present, throw an error
-    if (!member) return res.redirect("?error=You are not on the DiamondFire discord server!");
-    // If user is verified, throw error
-    if (perms.level >= 1) return res.redirect(`?error=You are already verified!`);
-    // If user does not fill out the input, throw error
-    if (!req.body.key) return res.redirect("?error=Please provide a secret key.");
-
-    // Fetch user attempts
-    let attempts = client.attempts.get(req.user.id) || 0;
-    // Fetch cooldown expiration
-    let cooldown = client.cooldowns.get(req.user.id) || Date.now();
-
-    // If user is on cooldown, throw an error
-    if (cooldown > Date.now()) return res.redirect(`?error=You are on cooldown. Please try again in ${ms(cooldown - Date.now(), { verbose: true })}.`);
-
-    // Fetch verification information from linked accounts, sanitizing secret key
-    const fields = await client.query(`SELECT player_name, secret_key FROM linked_accounts WHERE secret_key = '${req.body.key.replace(/[^a-z\d]/ig, "")}'`);
-    // If no data is returned, or player name specified does not match player name associated with input key...
-    if (!fields[0]) {
-        // Increment attempts
-        attempts++;
-
-        // If attempts is greater than 1, set cooldown to one minute
-        if (attempts >= 1) cooldown += 60000;
-        // If attempts is greater than 7, set cooldown to one hour
-        if (attempts >= 7) cooldown += 600000;
-
-        // If attempts is greater than 10...
-        if (attempts >= 10) {
-            // Delete their attempt data
-            client.attempts.delete(req.user.id);
-            // Delete their cooldown data
-            client.cooldowns.delete(req.user.id);
-            // Ban them from the Discord server
-            member.ban({ reason: "10 attempts at verification." }).catch(() => null);
-            // Throw an error
-            return res.redirect("?error=Your key is invalid. Since you have over 10 attempts, you have been banned from the discord server.");
-        }
-
-        //Update attempts
-        client.attempts.set(req.user.id, attempts);
-        // Update cooldown
-        client.cooldowns.set(req.user.id, cooldown);
-
-        // Notify user that their key is invalid
-        return res.redirect(`?error=Your key is invalid. Please wait for ${attempts >= 7 ? "10 minutes" : "1 minute"} before verifying yourself again.`);
+    const { client, templateDir } = fetchVariables(req);
+    // Fetch token data
+    const data = client.tokens.get(req.query.token);
+    // If no token found, tell the user their token has expired
+    if (!data) {
+        return res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: "Your token has expired. Please go through the verification process again."
+            }
+        });
     }
 
-    // Delete attempt data (if present)
-    client.attempts.delete(req.user.id);
-    // Delete cooldown data (if present)
-    client.cooldowns.delete(req.user.id);
+    const user = client.guild.members.get(req.user.id);
 
-    // Generate a verification token
-    const token = uuid();
-    // Insert into the tokens collection the user's id, account info, and token
-    client.tokens.set(req.user.id, { data: fields[0], token });
-    // Generate a timestamp (used for embed footer)
-    const timestamp = new Date();
+    if (!user) {
+        return res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: "You appear to have left the server! I cannot verify you if you're not on it."
+            }
+        });
+    }
 
-    // Notify the user to check their direct messages
-    res.redirect("?message=Check your private messages on discord.");
-    // Send the user an embed with a link to verification confirmation
-    member.send({ embed: {
-        color: 3060589,
-        author: {
-            name: "Confirm Verification"
-        },
-        description: `Click [here](${client.config.dashboard.domain}?token=${token}) to verify your account. This will expire in **3** minutes.`,
-        timestamp
-    } }).catch(() => res.redirect("?error=You do not have direct messages enabled."));
+    if (data.discord_id !== req.user.id) {
+        client.guild.ban(data.discord_id, { reason: "Sharing a confirmation link with another user." });
+        user.kick({ reason: "Using a confirmation link from another user." });
 
-    // In 3 minutes, delete their token information as it has expired
-    setTimeout(() => {
-        client.tokens.delete(req.user.id);
-    }, 180000);
+        return res.render(`${templateDir}/index.ejs`, {
+            client,
+            user: req.user,
+            data: {
+                message: "This verification link has not been created by you. You have been kicked from the server and the owner has been banned."
+            }
+        });
+    }
+    
+    // Delete the user's token information
+    client.tokens.delete(req.query.token);
+    // Give the user the role
+    user.roles.add(client.guild.roles.find("name", "Verified")).catch(() => null);
+    // Update their discord id field
+    client.query(`UPDATE linked_accounts SET discord_id = '${req.user.id}' WHERE player_name = '${data.player_name}';`);
+
+    // Tell them that their account has been successfully verified
+    res.render(`${templateDir}/index.ejs`, {
+        client,
+        user: req.user,
+        data: {
+            message: "Your account has been verified!"
+        }
+    });
 });
 
 // Export the router
