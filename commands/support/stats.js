@@ -1,28 +1,29 @@
 const ms = require("pretty-ms");
 const Base = require("../../base/Command");
-const fetchSupportData = require("../../methods/restricted/fetchSupportData");
+const fetchSupportData = require("../../methods/restricted/fetchSupportDataFromName");
 
 module.exports = class Stats extends Base {
     constructor(client) {
         super(client, {
             name: "stats",
             description: "Shows your support statistics.",
-            usage: "[user]",
+            usage: "[username]",
             category: "support",
             permLevel: 2
         });
     }
 
     async run(message, args) {
-        // Fetch target
-        const target = await super.verifyUser(args[0]) || message.author;
         // Fetch support data
-        const data = await fetchSupportData(this.client, target.id);
+        const data = await fetchSupportData(this.client, args[0] || message.member.displayName);
         // If no data returned, throw an error
-        if (!data || !data.sessions[0]) return super.error(`${target.id === message.author.id ? "You have" : "The specified user has"} not completed any sessions.`);
+        if (!data || !data.sessions[0]) return super.error(`No sessions found for user ${args[0] || message.member.displayName}.`);
+
+        // Attempt to find the target
+        const target = message.guild.members.find("displayName", data.sessions[0].staff);
 
         message.channel.buildEmbed(this.client.config.embedTemplate)
-            .setAuthor(target.tag, target.avatarURL({ size: 64 }))
+            .setAuthor(data.sessions[0].staff, target ? target.user.avatarURL({ size: 64 }) : null)
             .setTitle("Support Statistics")
             .addField("» Total Sessions", data.sessions.length)
             .addField("» Sessions this Month", data.month.length)
