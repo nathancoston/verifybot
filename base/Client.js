@@ -54,6 +54,12 @@ class CustomClient extends Client {
          */
         Object.defineProperty(this, "guildID", { value: clientOptions.guild });
 
+        /**
+         * The connection to the mySQL database
+         * @type {Connection}
+         */
+        Object.defineProperty(this, "connection", { value: null, writable: true });
+
         if (clientOptions.sql) {
             const connection = mysql.createConnection({
                 host: clientOptions.sql.host || "localhost",
@@ -63,7 +69,7 @@ class CustomClient extends Client {
             });
 
             connection.connect();
-            this.connection = connection;
+            Object.defineProperty(this, "connection", { value: connection, writable: true });
         }
 
         setInterval(async () => {
