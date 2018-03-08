@@ -23,7 +23,7 @@ module.exports = class Sql extends Base {
                 return Object.entries(r).map(data => `${data[0] + " ".repeat(spacing - data[0].length)} :: ${data[1]}`).join("\n");
             }).join("\n\n")}`, { code: "asciidoc" });
         }).catch(err => {
-            // T
+            // Throw an error
             message.channel.send(err, { code: "x1" });
         });
     }
