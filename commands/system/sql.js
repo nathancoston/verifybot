@@ -24,7 +24,7 @@ module.exports = class Sql extends Base {
             }).join("\n\n")}`, { code: "asciidoc" });
         }).catch(err => {
             // T
-            message.channel.send(`SQL Error\n\`\`\`${err}\`\`\``);
+            message.channel.send(err, { code: "x1" });
         });
     }
 };
