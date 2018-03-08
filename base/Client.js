@@ -61,12 +61,7 @@ class CustomClient extends Client {
         Object.defineProperty(this, "connection", { value: null, writable: true });
 
         if (clientOptions.sql) {
-            const connection = mysql.createConnection({
-                host: clientOptions.sql.host || "localhost",
-                user: clientOptions.sql.user || "root",
-                password: clientOptions.sql.password,
-                database: clientOptions.sql.db
-            });
+            const connection = mysql.createConnection(clientOptions.sql);
 
             connection.connect();
             Object.defineProperty(this, "connection", { value: connection, writable: true });
@@ -201,14 +196,14 @@ class CustomClient extends Client {
         // Define the user's perms as level 0
         let userPerms = perms[0];
 
-        return new Promise((resolve) => {
+        return new Promise(r => {
             // Fetch the guild member
             this.guild.members.fetch(user).then(member => {
                 // Filter through all permissions applicable to the user and return the highest level fount
                 userPerms = perms.filter(p => (p.role && member.roles.exists("name", p.role)) || (p.ids && p.ids.includes(user))).pop();
-                resolve(userPerms);
+                r(userPerms);
             }).catch(() => {
-                resolve(userPerms);
+                r(userPerms);
             });
         });
     }
