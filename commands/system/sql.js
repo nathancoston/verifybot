@@ -7,7 +7,7 @@ module.exports = class Sql extends Base {
             description: "Evaluates sql code",
             usage: "<sql code>",
             category: "system",
-            permLevel: 10,
+            permLevel: 6,
             aliases: ["mysql"]
         });
     }
