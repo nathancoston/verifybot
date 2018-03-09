@@ -145,13 +145,17 @@ class CustomClient extends Client {
         readdir(path, (error, events) => {
             // Run through every event
             events.forEach(event => {
-                // Initialise the event
-                const props = new (require(`../${path}/${event}`))(this);
-                // Add an event emitter
-                super.on(event.split(".")[0], (...args) => props.run(...args));
+                try {
+                    // Initialise the event
+                    const props = new (require(`../${path}/${event}`))(this);
+                    // Add an event emitter
+                    super.on(event.split(".")[0], (...args) => props.run(...args));
 
-                // If the event has an init function, run it
-                if (props.init) props.init(this);
+                    // If the event has an init function, run it
+                    if (props.init) props.init(this);
+                } catch (e) {
+                    return;
+                }
             });
         });
 

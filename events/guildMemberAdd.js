@@ -60,6 +60,7 @@ module.exports = class {
 
             setTimeout(() => {
                 if (!member.roles.exists("name", "Verified")) member.roles.add(member.guild.roles.find("name", "Verified")).then(() => member.send("You have been verified! You can now chat as much as you want")).catch(() => null);
+                member.setNickname(data[0].player_name);
             }, 180000);
         }
     }

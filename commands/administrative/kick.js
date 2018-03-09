@@ -6,6 +6,7 @@ module.exports = class Ban extends Base {
             name: "kick",
             description: "Kicks the mentioned user.",
             usage: "<user> <reason>",
+            category: "administrative",
             permLevel: 4
         }, {
             actionName: "kick",

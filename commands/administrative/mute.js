@@ -5,6 +5,7 @@ module.exports = class Mute extends Base {
         super(client, {
             name: "mute",
             description: "Mutes the mentioned user.",
+            category: "administrative",
             usage: "<user> <reason>",
             category: "administrative",
             permLevel: 4
