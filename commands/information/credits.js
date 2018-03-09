@@ -13,13 +13,14 @@ module.exports = class Credits extends Base {
 
     run(message) {
         // Create a new embed
-        const embed = message.channel.buildEmbed(this.client.config.embedTemplate)
+        message.channel.buildEmbed(this.client.config.embedTemplate)
             .setThumbnail(this.client.user.avatarURL({ size: 128 }))
             .setAuthor("Credits")
             .setDescription("VerifyBot was developed by these 2 users:")
-            .addField("» RedstoneDaedalus#2020 (268071134057070592)", "Bot Developer")
-            .addField("» Jeremaster#3655 (180506843796209664)", "Minecraft Server Developer");
-
-        embed.send();
+            .addField("» RedstoneDaedalus#2020 (268071134057070592)", "Bot developer")
+            .addField("» Jeremaster#3655 (180506843796209664)", "Minecraft server developer")
+            .addField("» York#0001 (146048938242211840)", "Source code for website")
+            .addField("» derpy.#8302 (223518178100248576)", "Inspiration for help menu")
+            .send();
     }
 };
