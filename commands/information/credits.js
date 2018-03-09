@@ -18,7 +18,7 @@ module.exports = class Credits extends Base {
             .setAuthor("Credits")
             .setDescription("VerifyBot was developed by these 2 users:")
             .addField("» RedstoneDaedalus#2020 (268071134057070592)", "Bot Developer")
-            .addField("» Jeremaster#3655", "Minecraft Server Developer");
+            .addField("» Jeremaster#3655 (180506843796209664)", "Minecraft Server Developer");
 
         embed.send();
     }
