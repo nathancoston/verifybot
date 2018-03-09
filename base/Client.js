@@ -175,10 +175,10 @@ class CustomClient extends Client {
      * @param {String} sql The sql code to execute
      * @returns {Promise<Array>} An array of results
      */
-    query(sql) {
+    query(sql, values = []) {
         return new Promise((resolve, reject) => {
             // Create a MySQL query from the connection
-            this.connection.query(sql, (err, result) => {
+            this.connection.query(sql, values, (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });

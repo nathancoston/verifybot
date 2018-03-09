@@ -123,7 +123,7 @@ router.get("/", checkAuth, async (req, res) => {
     }
 
     // Fetch data
-    const data = await client.query(`SELECT * FROM linked_accounts WHERE secret_key = '${req.query.key ? req.query.key.replace(/[^a-z\d]/ig, "") : ""}';`);
+    const data = await client.query("SELECT * FROM linked_accounts WHERE secret_key = ?;", [cient.connection.escape(req.query.key || "")]);
     // Fetch the first entry
     const profile = data[0];
 
@@ -159,7 +159,7 @@ router.get("/", checkAuth, async (req, res) => {
     }
 
     // Remove the secret key from the user's profile
-    await client.query(`UPDATE linked_accounts SET secret_key = NULL WHERE secret_key = '${profile.secret_key}';`);
+    await client.query("UPDATE linked_accounts SET secret_key = NULL WHERE secret_key = ?;", [profile.secret_key]);
 
     // Generate a token
     const token = uuid();

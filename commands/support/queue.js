@@ -13,7 +13,7 @@ module.exports = class Queue extends Base {
 
     async run(message) {
         // Fetch queue data
-        const queue = await this.client.query(`SELECT * FROM support_queue;`);
+        const queue = await this.client.query("SELECT * FROM support_queue;");
         // The data array is used to generate embed color, title, and description
         const data = [
             {

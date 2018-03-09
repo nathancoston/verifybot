@@ -23,7 +23,7 @@ module.exports = class Userinfo extends Base {
         if (!user) return super.error("Unknown user.");
 
         // Fetch verification data
-        const data = await this.client.query(`SELECT player_name, player_uuid FROM linked_accounts WHERE discord_id = '${user.id}';`);
+        const data = await this.client.query("SELECT player_name, player_uuid FROM linked_accounts WHERE discord_id = ?;", [user.id]);
 
         // Create a new embed
         const embed = message.channel.buildEmbed(this.client.config.embedTemplate)

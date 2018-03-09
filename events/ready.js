@@ -95,7 +95,5 @@ module.exports = class {
             notify(this.client);
             setInterval(() => notify(this.client), 8.64e+7);
         }, new Date() - tomorrowNoon);
-
-        notify(this.client);
     }
 };
