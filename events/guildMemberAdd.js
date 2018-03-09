@@ -8,7 +8,7 @@ module.exports = class {
 
     async run(member) {
         // Create a blacklist
-        const blacklist = new Blacklist({ token: "Sw8li6mT7h", update: true });
+        const blacklist = new Blacklist({ token: this.client.config.credentials.dbans, update: true });
         // Update the blacklist
         await blacklist.update();
         // Fetch blacklist data

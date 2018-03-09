@@ -34,7 +34,7 @@ const questions = [
     },
     {
         type: "input",
-        name: "credentials.sql.db",
+        name: "credentials.sql.database",
         message: "Mysql Database: "
     },
     {
@@ -46,6 +46,11 @@ const questions = [
         type: "input",
         name: "credentials.sql.password",
         message: "Mysql Password: "
+    },
+    {
+        type: "input",
+        name: "credentials.dbans",
+        message: "DiscordBans Token: "
     },
     {
         type: "input",
