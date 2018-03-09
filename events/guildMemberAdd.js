@@ -1,3 +1,4 @@
+const { Blacklist } = require("discordblacklist");
 const config = require("../config.json");
 
 module.exports = class {
@@ -6,10 +7,31 @@ module.exports = class {
     }
 
     async run(member) {
+        // Create a blacklist
+        const blacklist = new Blacklist({ token: "Sw8li6mT7h", update: true });
+        // Update the blacklist
+        await blacklist.update();
+        // Fetch blacklist data
+        const blacklisted = blacklist.lookup(member.id);
+
         // Find the joins channel
         const channel = member.guild.channels.find("name", config.channels.joins);
         // If no channel found, return
-        if (!channel) return;
+        if (!channel) {
+            if (blacklisted) member.ban({ reason: `${blacklisted.bannedFor} (${blacklisted.proofLink})` });
+            return;
+        };
+
+        if (blacklisted) {
+            channel.buildEmbed(this.client.config.embedTemplate)
+            .setColor(0xff6400)
+            .setThumnail(member.user.avatarURL({ size: 256, format: "png" }))
+            .setDescription("<:joined:401925850846724106> | Publically banned member joined.")
+            .addField("» Banned For", blacklisted.bannedFor, false)
+            .addField("» Proof", blacklist.proofLink, false)
+            .setTimestamp()
+            .send();
+        }
         
         // Create a new embed
         const embed = channel.buildEmbed(this.client.config.embedTemplate)
