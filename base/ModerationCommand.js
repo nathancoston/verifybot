@@ -60,8 +60,10 @@ class ModerationCommand extends Command {
         this.executor = message.member;
         // Get the target member
         this.target = message.guild.member(await super.verifyUser(args[0]));
+        // If no target found, throw an error
+        if (!this.target) return super.error("Invalid user.");
         // Find the reason
-        this.reason = args.join(" ").replace(new RegExp(`( |)(${this.target.toString()}|${this.target.id})( |)`), "");
+        this.reason = args.join(" ").replace(new RegExp(`( |)(${this.target}|${this.target.id})( |)`), "");
 
         // Return an empty promise
         return new Promise(r => r());

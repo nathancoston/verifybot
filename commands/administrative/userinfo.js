@@ -15,6 +15,8 @@ module.exports = class Userinfo extends Base {
     async run(message, args) {
         // Fetch the target user
         const user = await super.verifyUser(args[0]);
+        // If user is invalid, throw an error
+        if (!user) return super.error("Invalid user.");
         // Fetch the guild member
         const member = await message.guild.members.fetch(user.id);
         // Fetch the user's permission level
