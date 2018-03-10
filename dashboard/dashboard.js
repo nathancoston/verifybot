@@ -73,8 +73,8 @@ function run(client) {
     // / route
     app.use("/", require("./routes/index"));
 
-    // Listen on port 4040
-    app.listen(4040);
+    // Listen on the specified port
+    app.listen(client.config.dashboard.port);
 }
 
 module.exports = run;

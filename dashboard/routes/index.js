@@ -167,7 +167,7 @@ router.get("/", checkAuth, async (req, res) => {
     // Send them a message
     user.send({
         embed: {
-            description: `Click [here](http://localhost:4040/confirm?token=${token}) to verify your account! This link will expire in 3 minutes.`,
+            description: `Click [here](${client.config.dashboard.domain}/confirm?token=${token}) to verify your account! This link will expire in 3 minutes.`,
             url: "http://verify.mcdiamondfire.com",
             color: 7506394,
             timestamp: new Date(),
