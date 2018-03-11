@@ -42,6 +42,8 @@ module.exports = class Pull extends Command {
             });
         } catch (e) {
             super.error("An unknown error occured.");
+
+            console.log(e);
         }
     }
 };
