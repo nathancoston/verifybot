@@ -109,19 +109,6 @@ router.get("/", checkAuth, async (req, res) => {
         });
     }
 
-    // Fetch the user's cooldown
-    const cooldown = client.cooldowns.get(req.user.id);
-    // If user is on cooldown, tell them they can't verify yet
-    if (cooldown && cooldown > Date.now()) {
-        return res.render(`${templateDir}/index.ejs`, {
-            client,
-            user: req.user,
-            data: {
-                message: `You are currently on cooldown. Please wait ${ms(cooldown - Date.now(), { verbose: true, secDecimalDigits: 0 })} before trying to verify again.`
-            }
-        });
-    }
-
     // Fetch data
     const data = await client.query("SELECT * FROM linked_accounts WHERE secret_key = ?;", [cient.connection.escape(req.query.key || "")]);
     // Fetch the first entry
@@ -132,28 +119,11 @@ router.get("/", checkAuth, async (req, res) => {
 
     // If no profile was found for the specified key, send them to a link to get instruction
     if (!profile) {
-        const attempts = (client.attempts.get(req.user.id) || 0) + 1;
-
-        const expiration = attempts < 7 ? 60000 : 600000;
-        client.cooldowns.set(req.user.id, Date.now() + expiration);
-
-        if (attempts > 10) {
-            user.ban({ reason: "Too many attempts at verification." });
-
-            return res.render(`${templateDir}/index.ejs`, {
-                client,
-                user: req.user,
-                data: {
-                    message: "You have used up all of your 10 attempts at verification. You have been permanently banned from the Discord server."
-                }
-            });
-        }
-
         return res.render(`${templateDir}/index.ejs`, {
             client,
             user: req.user,
             data: {
-                message: `Your secret key is invalid. Please wait for ${ms(cooldown, { verbose: true, secDecimalDigits: 0 })} until attempting to verify again. (You have ${10 - attempts === 0 ? "No" : 10 - attempts} more attempt${attempts === 9 ? "" : "s"})`
+                message: "Your key is invalid or expired."
             }
         });
     }
