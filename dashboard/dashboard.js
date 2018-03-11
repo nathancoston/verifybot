@@ -1,5 +1,6 @@
 // Imports
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const ejs = require("ejs");
 const express = require("express");
 const session = require("express-session");
@@ -19,6 +20,8 @@ function run(client) {
 
     // Define "public" directory
     app.use("/public", express.static(path.resolve(`${dataDir + path.sep}public`)));
+    // Define cookie parser
+    app.use(cookieParser());
 
     // Use bodyparser
     app.use(bodyParser.json());

@@ -1,6 +1,4 @@
-const {
-    Router
-} = require("express");
+const { Router } = require("express");
 
 const passport = require("passport");
 const ms = require("pretty-ms");
@@ -45,12 +43,16 @@ router.get("/logout", (req, res) => {
 });
 
 // GET /
-router.get("/", checkAuth, async (req, res) => {
+router.get("/", (req, res, next) => {
+        if (!req.isAuthenticated() && req.query.key) {
+            const cookie = req.cookies.secret_key;
+            if (cookie === undefined) {
+                res.cookie("secret_key", req.query.key, { maxAge: 3.6e+6, httpOnly: true });
+            }
+        }
+    }, async (req, res) => {
     // Fetch variables
-    const {
-        client,
-        templateDir
-    } = fetchVariables(req);
+    const { client, templateDir } = fetchVariables(req);
 
     // If user is not on the guild, prompt them to join
     if (!client.guild.members.has(req.user.id)) {
@@ -77,8 +79,11 @@ router.get("/", checkAuth, async (req, res) => {
         });
     }
 
+    // Fetch key
+    const key = req.query.key || req.cookies.secret_key;
+
     // If key is invalid, give them instructions
-    if (!req.query.key) {
+    if (key) {
         return res.render(`${templateDir}/index.ejs`, {
             client,
             user: req.user,
@@ -110,7 +115,7 @@ router.get("/", checkAuth, async (req, res) => {
     }
 
     // Fetch data
-    const data = await client.query("SELECT * FROM linked_accounts WHERE secret_key = ?;", [cient.connection.escape(req.query.key || "")]);
+    const data = await client.query("SELECT * FROM linked_accounts WHERE secret_key = ?;", [cient.connection.escape(key || "")]);
     // Fetch the first entry
     const profile = data[0];
 
