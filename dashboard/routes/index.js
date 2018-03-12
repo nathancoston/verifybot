@@ -53,11 +53,6 @@ router.get("/", (req, res, next) => {
 
     next();
     }, checkAuth, async (req, res) => {
-    // If user has a key in their cookies, redirect them to /?key=
-    if (req.cookies.secret_key) {
-        res.redirect(`/?key=${req.cookies.secret_key}`);
-    }
-
     // Fetch variables
     const { client, templateDir } = fetchVariables(req);
 
