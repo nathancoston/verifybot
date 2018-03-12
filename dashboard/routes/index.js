@@ -44,12 +44,7 @@ router.get("/logout", (req, res) => {
 
 // GET /
 router.get("/", (req, res, next) => {
-    if (!req.isAuthenticated() && req.query.key) {
-        const cookie = req.cookies.secret_key;
-        if (cookie === undefined) {
-            res.cookie("secret_key", req.query.key);
-        }
-    }
+    if (!req.isAuthenticated() && req.query.key) res.cookie("secret_key", req.query.key);
 
     next();
     }, checkAuth, async (req, res) => {
