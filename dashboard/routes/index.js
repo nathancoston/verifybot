@@ -239,7 +239,7 @@ router.get("/confirm", checkAuth, async (req, res) => {
     });
 
     // Get the channel
-    const channel = client.channels.find("name", "verification");
+    const channel = client.channels.find("name", client.config.channels.verification);
     // If not channel, return
     if (!channel) return;
 
