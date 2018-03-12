@@ -117,7 +117,7 @@ router.get("/", (req, res, next) => {
     }
 
     // Fetch data
-    const data = await client.query("SELECT * FROM linked_accounts WHERE secret_key = ?;", [cient.connection.escape(key || "")]);
+    const data = await client.query("SELECT * FROM linked_accounts WHERE secret_key = ?;", [client.connection.escape(key || "")]);
     // Fetch the first entry
     const profile = data[0];
 
