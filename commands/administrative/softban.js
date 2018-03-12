@@ -6,6 +6,7 @@ module.exports = class Ban extends Base {
             name: "softban",
             description: "Kicks the mentioned user and purges their messages.",
             usage: "<user> <reason>",
+            category: "administration",
             permLevel: 4
         }, {
             actionName: "softban",

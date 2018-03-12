@@ -6,6 +6,7 @@ module.exports = class Reason extends Base {
             name: "reason",
             description: "Changes the reason for a moderation log.",
             usage: "<case> <reason>",
+            category: "administration",
             permLevel: 4
         });
     }

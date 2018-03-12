@@ -5,7 +5,7 @@ module.exports = class Help extends Base {
         super(client, {
             name: "help",
             description: "Get a full list of commands.",
-            usage: "[command]",
+            usage: "",
             category: "information",
             permLevel: 0
         });
