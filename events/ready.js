@@ -73,7 +73,7 @@ module.exports = class {
                 .setAuthor("Node Report")
                 .setDescription(`${offline.length === 0 ? "No" : offline.length} node${offline.length === 1 ? "" : "s"} offline.`);
 
-            list.map(data => embed.addField(`Node ${data.node}`, `${data.online ? `Online with ${data.players === 0 ? "No" : data.players} player${data.players === 1 ? "" : "s"}` : `Offline for ${ms(Date.now() - data.updated, { verbose: true, secDecimalDigits: 0 })}`}`));
+            list.map(data => embed.addField(`Node ${data.node}`, `${data.online ? `Online with ${data.players === 0 ? "no" : data.players} player${data.players === 1 ? "" : "s"}` : `Offline for ${ms(Date.now() - data.updated, { verbose: true, secDecimalDigits: 0 })}`}`));
 
             const collection = await channel.messages.fetch({ limit: 1 });
             
