@@ -29,7 +29,7 @@ module.exports = class Eval extends Base {
             // Turn the error into a string
             const error = inspect(err);
             // Respond with the stringified error
-            super.error(`Errored (${Date.now() - start}ms)\`\`\`js\n${error}\`\`\``).catch(() => super.error("Output too long to send"));
+            super.error(`Errored (${Date.now() - start}ms)\`\`\`js\n${error.split("\n")[0]}\`\`\``).catch(() => super.error("Output too long to send"));
         });
     }
 };
