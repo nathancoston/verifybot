@@ -224,7 +224,7 @@ router.get("/confirm", checkAuth, async (req, res) => {
     // Give the user the role
     user.roles.add(client.guild.roles.find("name", "Verified")).catch(() => null);
     // Set the user's nickname
-    user.setNickname(profile.player_name);
+    user.setNickname(data.player_name);
 
     // Update their discord id field
     client.query(`UPDATE linked_accounts SET discord_id = '${req.user.id}' WHERE player_name = '${data.player_name}';`);
@@ -246,9 +246,10 @@ router.get("/confirm", checkAuth, async (req, res) => {
     // Create an embed and send it
     channel.buildEmbed()
         .setColor("GREEN")
-        .setAuthor(profile.player_name, user.avatarURL({ size: 128, format: "png" }))
+        .setAuthor(data.player_name, user.avatarURL({ size: 128, format: "png" }))
         .setFooter("VerifyBot by RedstoneDaedalus")
-        .setTimestamp();
+        .setTimestamp()
+        .send();
 });
 
 // Export the router
