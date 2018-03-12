@@ -98,7 +98,10 @@ router.get("/mod", checkAuth, async (req, res) => {
     // Fetch last 25 reports
     const reports = await client.channels.find("name", "reports").messages.fetch({ limit: 25 });
     // Filter reports and slice them
-    const filtered = reports ? reports.filter(r => (!r.reactions.first() || r.reactions.first().count === 0) && (r.embeds && r.embeds.length > 0 || r.attachments.size > 0) && /([a-zA-Z0-9]{2,16})[\s|](\||-|:|is)[\s|](.+)/g.exec(r.content).length >= 4).array().slice(0, 4) : new Collection();
+    const filtered = reports ? reports.filter(r => {
+        const match = /([a-zA-Z0-9]{2,16})[\s|](\||-|:|is)[\s|](.+)/g.exec(r.content);
+        return (!r.reactions.first() || r.reactions.first().count === 0) && (r.embeds && r.embeds.length > 0 || r.attachments.size > 0) && match && match.length > 4;
+    }).array().slice(0, 4) : new Collection();
 
     // Render file
     res.render(`${templateDir}/staff/mod.ejs`, {
