@@ -8,8 +8,8 @@ module.exports = class {
     }
 
     async run(message) {
-        // Ignore if sender is bot, or if message is sent in a direct message
-        if (message.author.bot || !message.guild || message.channel.type !== "text") return;
+        // Ignore if sender is bot, channel is blacklisted, or if message is sent in a direct message
+        if (message.author.bot || !message.guild || message.channel.type !== "text" || ["reports", "dfchat"].includes(message.channek.name)) return;
 
         // Calculate permissions
         const userPerms = await this.client.permLevel(message.author.id);
