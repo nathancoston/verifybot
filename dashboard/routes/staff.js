@@ -185,7 +185,7 @@ router.get("/admin", checkAuth, async (req, res) => {
     // Fetch verified role
     const verified = client.guild.roles.find("name", "Verified");
     // Fetch wether or not the server is on cooldown
-    const onLockdown = (chatChannels.find(c => c.permissionsFor(verified)));
+    const onLockdown = (chatChannels.find(c => !c.permissionsFor(verified).has("SEND_MESSAGES")));
 
     // Fetch node data
     const nodes = await (require("../../methods/restricted/fetchNodeData"))(client);
