@@ -44,13 +44,21 @@ router.get("/logout", (req, res) => {
 
 // GET /
 router.get("/", (req, res, next) => {
-        if (!req.isAuthenticated() && req.query.key) {
-            const cookie = req.cookies.secret_key;
-            if (cookie === undefined) {
-                res.cookie("secret_key", req.query.key, { maxAge: 3.6e+6, httpOnly: true });
-            }
+    if (!req.isAuthenticated() && req.query.key) {
+        const cookie = req.cookies.secret_key;
+        if (cookie === undefined) {
+            res.cookie("secret_key", req.query.key);
         }
-    }, async (req, res) => {
+    }
+
+    next();
+    }, checkAuth, async (req, res) => {
+    // If user has a key in their cookies, redirect them to /?key=
+    if (req.cookies.secret_key) {
+        res.redirect(`/?key=${req.cookies.secret_key}`);
+        return req.cookies.set("secret_key", undefined);
+    }
+
     // Fetch variables
     const { client, templateDir } = fetchVariables(req);
 
