@@ -81,7 +81,6 @@ router.get("/", (req, res, next) => {
 
     // If key is invalid, give them instructions
     if (!key) {
-        req.cookies.set("secret_key", undefined);
         return res.render(`${templateDir}/index.ejs`, {
             client,
             user: req.user,
@@ -121,7 +120,7 @@ router.get("/", (req, res, next) => {
 
     // If no profile was found for the specified key, send them to a link to get instruction
     if (!profile) {
-        req.cookies.set("secret_key", undefined);
+        res.clearCookie("secret_key");
         return res.render(`${templateDir}/index.ejs`, {
             client,
             user: req.user,
