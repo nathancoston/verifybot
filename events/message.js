@@ -57,7 +57,7 @@ module.exports = class {
         // Verify that message is a command
         if (message.content.indexOf(this.client.config.prefix) === -1) return;
 
-        if (perms.level < 4 && ["reports"].includes(message.channel.name)) return;
+        if (userPerms.level < 4 && ["reports"].includes(message.channel.name)) return;
 
         // Fetch command name and arguments
         const args = message.content.split(/\s+/g);
